@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Add a Shoe — Prime Wear Collections 254</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;600;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--espresso:#2A1B12; --cream:#EDE3D0; --cream-2:#F6F0E4; --rust:#B5451F; --rust-dark:#8F3517; --charcoal:#211B16; --gold:#C89B4A; --green:#3f7a4d; --display:'Roboto Slab', serif; --body:'Inter', sans-serif;}
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:var(--body); background:var(--cream-2); color:var(--charcoal); line-height:1.5;}
+  .topnav{background:var(--espresso); color:var(--cream); padding:16px 20px;}
+  .topnav h1{font-family:var(--display); font-size:1.1rem; max-width:720px; margin:0 auto;}
+  .wrap{max-width:720px; margin:0 auto; padding:24px 20px 80px;}
+  .intro{background:#fff; border:1px dashed rgba(42,27,18,0.3); border-radius:10px; padding:16px 18px; font-size:0.88rem; color:#5c4f43; margin-bottom:24px;}
+  .field{margin-bottom:16px;}
+  .field label{display:block; font-size:0.82rem; font-weight:700; margin-bottom:6px;}
+  .hint{font-size:0.74rem; color:#8a7d6f; margin-top:4px;}
+  input, select, textarea{width:100%; padding:11px; border-radius:7px; border:1px solid rgba(42,27,18,0.25); font-size:0.92rem; font-family:inherit; background:#fff;}
+  textarea{resize:vertical; min-height:70px;}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  .checkbox-line{display:flex; align-items:center; gap:8px; font-size:0.88rem;}
+  .checkbox-line input{width:auto;}
+  .gen-btn{width:100%; background:var(--rust); color:#fff; padding:14px; border-radius:9px; font-weight:700; font-size:0.95rem; border:none; cursor:pointer; margin-top:8px;}
+  .output-box{margin-top:26px; display:none;}
+  .output-box.show{display:block;}
+  .output-box h3{font-family:var(--display); font-size:1.05rem; margin-bottom:8px;}
+  .code-area{width:100%; min-height:110px; font-family:'Courier New',monospace; font-size:0.8rem; background:var(--espresso); color:#F5EFE2; padding:14px; border-radius:8px; border:none; white-space:pre-wrap;}
+  .copy-btn{margin-top:10px; background:var(--espresso); color:var(--cream); font-weight:700; font-size:0.85rem; padding:10px 18px; border-radius:7px; border:none; cursor:pointer;}
+  .copy-btn.copied{background:var(--green);}
+  .steps{background:#fff; border-radius:10px; padding:16px 18px; margin-top:16px; font-size:0.86rem; color:#5c4f43;}
+  .steps ol{padding-left:18px;}
+  .steps li{margin-bottom:6px;}
+  .steps code{background:#eee3d0; padding:1px 5px; border-radius:4px; font-size:0.82rem;}
+</style>
+</head>
+<body>
+<nav class="topnav"><h1>Add a Shoe — Prime Wear Collections 254</h1></nav>
+<div class="wrap">
+  <div class="intro">
+    Fill this in for one shoe. It won't add itself to the live shop automatically — it generates a small piece of code you (or the seller) paste into <code>prime-wear-collections-254.html</code>. No coding knowledge needed beyond copy and paste — steps are below the button.
+  </div>
+
+  <div class="field">
+    <label>Shoe name</label>
+    <input type="text" id="fName" placeholder="e.g. Canvas High-Top">
+  </div>
+
+  <div class="row2">
+    <div class="field">
+      <label>Category</label>
+      <select id="fCat">
+        <option value="sneakers|Sneakers">Sneakers</option>
+        <option value="official|Official Wear">Official Wear</option>
+        <option value="boots|Boots">Boots</option>
+        <option value="sandals|Sandals & Slides">Sandals & Slides</option>
+        <option value="kids|Kids">Kids</option>
+        <option value="__new__">+ New category…</option>
+      </select>
+      <input type="text" id="fNewCat" placeholder="New category name" style="margin-top:8px; display:none;">
+    </div>
+    <div class="field">
+      <label>Price (KSh)</label>
+      <input type="number" id="fPrice" placeholder="e.g. 3000">
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Which outline should it use for now?</label>
+    <select id="fIcon">
+      <option value="sneakerSvg">Sneaker shape</option>
+      <option value="bootSvg">Boot shape</option>
+      <option value="sandalSvg">Sandal / slide shape</option>
+      <option value="officialSvg">Formal shoe shape</option>
+      <option value="kidsSvg">Kids shoe shape</option>
+    </select>
+    <div class="hint">This just picks the closest placeholder picture until a real photo is added. See step 4 below for swapping in a real photo later.</div>
+  </div>
+
+  <div class="row2">
+    <div class="field">
+      <label>Sizes available</label>
+      <input type="text" id="fSizes" placeholder="e.g. 39,40,41,42,43">
+    </div>
+    <div class="field">
+      <label>Colours available</label>
+      <input type="text" id="fColors" placeholder="e.g. Black,Brown">
+      <div class="hint">Stick to: Black, White, Grey, Brown, Tan, Navy, Pink, Blue — these already have matching colour swatches. New colour names will show in the list but won't recolour the picture.</div>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Short description (one sentence buyers will read)</label>
+    <textarea id="fDesc" placeholder="e.g. A durable school shoe that holds up to daily wear."></textarea>
+  </div>
+
+  <div class="checkbox-line">
+    <input type="checkbox" id="fStock" checked>
+    <label for="fStock">Currently in stock</label>
+  </div>
+
+  <button class="gen-btn" id="genBtn">Generate code for this shoe</button>
+
+  <div class="output-box" id="outputBox">
+    <h3>Copy this</h3>
+    <div class="code-area" id="codeArea"></div>
+    <button class="copy-btn" id="copyBtn">Copy code</button>
+
+    <div class="steps">
+      <strong>Where it goes:</strong>
+      <ol>
+        <li>Open <code>prime-wear-collections-254.html</code> in any text editor (Notes app, Notepad, or GitHub's web editor).</li>
+        <li>Find the block that starts with <code>const PRODUCTS = [</code>.</li>
+        <li>Paste the copied line in anywhere inside that list — just make sure it sits between two existing <code>{ ... },</code> lines, or right before the closing <code>];</code>.</li>
+        <li>Save the file. If a new category was used, also add it to the filter list — find <code>const CATS = [</code> just below <code>PRODUCTS</code> and add a line like <code>{id:'yourcategoryid', label:'Your Category Name'},</code> so it shows up as a filter button.</li>
+        <li>To later swap the outline picture for a real photo: replace <code>svg:sneakerSvg</code> (or whichever it says) with <code>svg:'&lt;img src="photos/yourfile.jpg"&gt;'</code> once photos are ready — happy to help wire that up properly when you have them.</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('fCat').addEventListener('change', (e)=>{
+  document.getElementById('fNewCat').style.display = e.target.value==='__new__' ? 'block' : 'none';
+});
+
+function slugify(s){ return s.toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
+
+document.getElementById('genBtn').addEventListener('click', ()=>{
+  const name = document.getElementById('fName').value.trim();
+  const price = document.getElementById('fPrice').value.trim();
+  const desc = document.getElementById('fDesc').value.trim().replace(/'/g, "\\'");
+  const sizes = document.getElementById('fSizes').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const colors = document.getElementById('fColors').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const icon = document.getElementById('fIcon').value;
+  const stock = document.getElementById('fStock').checked;
+
+  let catVal = document.getElementById('fCat').value;
+  let catId, catLabel;
+  if(catVal==='__new__'){
+    catLabel = document.getElementById('fNewCat').value.trim() || 'New Category';
+    catId = slugify(catLabel);
+  } else {
+    [catId, catLabel] = catVal.split('|');
+  }
+
+  if(!name || !price || sizes.length===0 || colors.length===0){
+    alert('Please fill in at least the name, price, sizes and colours.');
+    return;
+  }
+
+  const id = catId.slice(0,2) + Date.now().toString().slice(-5);
+  const sizesJs = sizes.map(s=>isNaN(s)?`'${s}'`:s).join(', ');
+  const colorsJs = colors.map(c=>`'${c}'`).join(', ');
+
+  const code = `{id:'${id}', name:'${name.replace(/'/g,"\\'")}', cat:'${catId}', catLabel:'${catLabel}', price:${Number(price)||0}, sizes:[${sizesJs}], colors:[${colorsJs}], desc:'${desc}', svg:${icon}, stock:${stock}},`;
+
+  document.getElementById('codeArea').textContent = code;
+  document.getElementById('outputBox').classList.add('show');
+  document.getElementById('outputBox').scrollIntoView({behavior:'smooth'});
+});
+
+document.getElementById('copyBtn').addEventListener('click', (e)=>{
+  const text = document.getElementById('codeArea').textContent;
+  navigator.clipboard?.writeText(text).then(()=>{
+    e.target.textContent = 'Copied ✓'; e.target.classList.add('copied');
+    setTimeout(()=>{ e.target.textContent = 'Copy code'; e.target.classList.remove('copied'); }, 1500);
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prime Wear Collections 254 — Shoes for Every Step</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;600;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --espresso:#2A1B12; --espresso-2:#3A2618; --leather:#8B4A2B; --leather-light:#A9683F;
+    --cream:#EDE3D0; --cream-2:#F6F0E4; --rust:#B5451F; --rust-dark:#8F3517; --charcoal:#211B16;
+    --gold:#C89B4A; --green:#3f7a4d; --line:rgba(200,155,74,0.35);
+    --display:'Roboto Slab', serif; --body:'Inter', sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body); background:var(--cream-2); color:var(--charcoal); line-height:1.5; -webkit-font-smoothing:antialiased;}
+  a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;}
+
+  .topnav{position:sticky; top:0; z-index:50; background:var(--espresso); color:var(--cream); border-bottom:1px solid var(--line);}
+  .topnav-inner{max-width:1200px; margin:0 auto; padding:14px 20px; display:flex; align-items:center; justify-content:space-between;}
+  .brand-mark{font-family:var(--display); font-weight:800; font-size:1.05rem; letter-spacing:0.02em;}
+  .brand-sub{font-size:0.72rem; color:var(--gold); font-weight:600;}
+
+  .fab-order{position:fixed; right:18px; bottom:18px; z-index:80; background:var(--rust); color:#fff; padding:14px 20px 14px 16px; border-radius:999px; display:flex; align-items:center; gap:10px; font-weight:700; font-size:0.92rem; box-shadow:0 10px 26px rgba(181,69,31,0.45); transition:transform .15s;}
+  .fab-order:active{transform:scale(0.96);}
+  .fab-order svg{width:20px; height:20px; flex-shrink:0;}
+  .fab-count{background:#fff; color:var(--rust-dark); border-radius:999px; min-width:22px; height:22px; display:inline-flex; align-items:center; justify-content:center; font-size:0.78rem; font-weight:800; padding:0 6px;}
+
+  .toast{position:fixed; left:50%; bottom:88px; transform:translateX(-50%) translateY(20px); z-index:120; background:var(--charcoal); color:#fff; padding:11px 20px; border-radius:999px; font-size:0.85rem; font-weight:600; opacity:0; pointer-events:none; transition:opacity .2s, transform .2s; box-shadow:0 8px 20px rgba(0,0,0,0.25); white-space:nowrap; max-width:90vw; overflow:hidden; text-overflow:ellipsis;}
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+  .shoe-hero{position:relative; overflow:hidden; background:radial-gradient(ellipse at 20% -10%, rgba(200,155,74,0.18), transparent 55%), linear-gradient(180deg, var(--espresso) 0%, #241609 100%); color:var(--cream); padding:70px 20px 64px;}
+  .shoe-hero::before{content:""; position:absolute; inset:0; opacity:0.10; pointer-events:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='140' viewBox='0 0 220 140'><g fill='none' stroke='%23C89B4A' stroke-width='2'><path d='M10 100 C10 80 30 60 60 58 C90 56 100 40 130 42 C160 44 175 60 190 62 C205 64 210 78 205 92 C200 106 180 108 150 106 L30 106 C18 106 10 104 10 100 Z'/><path d='M60 58 L70 90'/><path d='M85 52 L92 90'/><path d='M110 44 L112 90'/></g></svg>");
+    background-size:220px 140px; background-repeat:repeat; animation:driftShoes 90s linear infinite;}
+  @keyframes driftShoes{ from{background-position:0 0;} to{background-position:-1000px 600px;} }
+  .shoe-hero-inner{position:relative; z-index:1; max-width:900px; margin:0 auto; text-align:center;}
+  .shoe-hero .eyebrow{color:var(--gold); font-weight:600; letter-spacing:0.03em; margin-bottom:14px; font-size:0.9rem;}
+  .shoe-hero h1{font-family:var(--display); font-weight:800; font-size:clamp(2.1rem,5.5vw,3.6rem); line-height:1.08; margin-bottom:16px;}
+  .shoe-hero h1 .stitch{display:inline-block; border-bottom:3px dashed var(--gold); padding-bottom:2px;}
+  .shoe-hero p.lede{color:rgba(237,227,208,0.82); max-width:540px; margin:0 auto 30px; font-size:1.05rem;}
+  .hero-cta-row{display:flex; gap:14px; justify-content:center; flex-wrap:wrap;}
+  .btn-primary{background:var(--rust); color:#fff; padding:14px 26px; border-radius:8px; font-weight:700; font-size:0.95rem; box-shadow:0 10px 22px rgba(181,69,31,0.35);}
+  .btn-ghost{border:1px solid rgba(237,227,208,0.4); color:var(--cream); padding:13px 24px; border-radius:8px; font-weight:600; font-size:0.95rem;}
+
+  .shelf-strip{background:var(--leather); color:var(--cream-2); padding:12px 20px; overflow:hidden; white-space:nowrap; border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
+  .shelf-strip .track{display:inline-flex; gap:40px; animation:scrollTrack 26s linear infinite; font-family:var(--display); font-weight:600; font-size:0.85rem; letter-spacing:0.03em;}
+  @keyframes scrollTrack{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
+
+  .catalog-wrap{max-width:1160px; margin:0 auto; padding:44px 20px 100px;}
+  .catalog-head h2{font-family:var(--display); font-size:1.6rem; margin-bottom:6px;}
+  .catalog-head p{color:#5c4f43; font-size:0.92rem;}
+  .filter-row{display:flex; gap:8px; flex-wrap:wrap; margin:20px 0 28px; border-top:1px solid rgba(42,27,18,0.12); border-bottom:1px solid rgba(42,27,18,0.12); padding:14px 0;}
+  .filter-chip{padding:8px 15px; border-radius:999px; font-size:0.83rem; font-weight:600; background:transparent; border:1px solid rgba(42,27,18,0.25); color:var(--charcoal);}
+  .filter-chip.active, .filter-chip:hover{background:var(--espresso); color:var(--cream); border-color:var(--espresso);}
+  .shoe-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:22px; padding-bottom:20px;}
+  .shoe-card{background:var(--cream-2); border-radius:10px; overflow:hidden; position:relative; box-shadow:0 8px 20px rgba(42,27,18,0.10); border:1px solid rgba(42,27,18,0.06); display:flex; flex-direction:column; cursor:pointer; transition:box-shadow .15s;}
+  .shoe-card:hover{box-shadow:0 12px 26px rgba(42,27,18,0.18);}
+  .shoe-card .thumb{aspect-ratio:1/0.85; position:relative; overflow:hidden; background:linear-gradient(160deg, var(--leather-light), var(--leather) 60%, var(--espresso-2)); display:flex; align-items:center; justify-content:center;}
+  .shoe-card .thumb svg{width:62%; opacity:0.94; filter:drop-shadow(0 6px 8px rgba(0,0,0,0.3));}
+  .shoe-card .cat-tag{position:absolute; top:10px; left:10px; background:rgba(33,27,22,0.55); color:#fff; font-size:0.65rem; font-weight:700; padding:3px 9px; border-radius:999px;}
+  .shoe-card .out-tag{position:absolute; top:10px; right:10px; background:rgba(181,69,31,0.85); color:#fff; font-size:0.62rem; font-weight:700; padding:3px 9px; border-radius:999px;}
+  .shoe-card .info{padding:14px 14px 16px; display:flex; flex-direction:column; gap:6px; flex:1;}
+  .shoe-card h4{font-family:var(--display); font-size:1rem;}
+  .shoe-card .price{color:var(--rust-dark); font-weight:800; font-size:1.02rem;}
+  .shoe-card .sizes{font-size:0.76rem; color:#7a6c5c;}
+  .view-details-hint{margin-top:auto; font-weight:700; font-size:0.83rem; color:var(--espresso); display:flex; align-items:center; gap:5px; padding-top:6px;}
+
+  .modal-overlay{position:fixed; inset:0; background:rgba(33,27,22,0.55); z-index:100; display:none; align-items:flex-end; justify-content:center;}
+  .modal-overlay.open{display:flex;}
+  @media (min-width:640px){ .modal-overlay{align-items:center;} }
+  .product-modal{background:var(--cream-2); width:100%; max-width:480px; max-height:92vh; overflow-y:auto; border-radius:16px 16px 0 0; position:relative;}
+  @media (min-width:640px){ .product-modal{border-radius:16px;} }
+  .modal-close{position:absolute; top:12px; right:12px; z-index:2; background:rgba(33,27,22,0.55); color:#fff; width:32px; height:32px; border-radius:999px; font-size:1.1rem; display:flex; align-items:center; justify-content:center;}
+  .modal-thumb{aspect-ratio:1/0.7; background:linear-gradient(160deg, var(--leather-light), var(--leather) 60%, var(--espresso-2)); display:flex; align-items:center; justify-content:center; transition:background .2s;}
+  .modal-thumb svg{width:52%; filter:drop-shadow(0 8px 10px rgba(0,0,0,0.3)); transition:opacity .12s;}
+  .modal-body{padding:20px 22px 24px;}
+  .modal-cat{color:var(--rust-dark); font-weight:700; font-size:0.76rem; letter-spacing:0.02em; margin-bottom:6px;}
+  .modal-body h2{font-family:var(--display); font-size:1.35rem; margin-bottom:6px;}
+  .modal-price{font-weight:800; font-size:1.2rem; color:var(--rust-dark); margin-bottom:12px;}
+  .modal-desc{font-size:0.9rem; color:#5c4f43; margin-bottom:18px;}
+  .modal-section{margin-bottom:16px;}
+  .modal-section label{display:block; font-size:0.8rem; font-weight:700; margin-bottom:8px;}
+  .swatch-row{display:flex; gap:8px; flex-wrap:wrap;}
+  .swatch-chip{padding:6px 14px 6px 8px; border-radius:999px; font-size:0.82rem; border:1px solid rgba(42,27,18,0.25); font-weight:600; display:inline-flex; align-items:center; gap:7px;}
+  .swatch-chip .dot{width:14px; height:14px; border-radius:50%; border:1px solid rgba(0,0,0,0.2); display:inline-block;}
+  .swatch-chip.active{background:var(--espresso); color:var(--cream); border-color:var(--espresso);}
+  .size-row{display:flex; gap:8px; flex-wrap:wrap;}
+  .size-chip{padding:7px 13px; border-radius:6px; font-size:0.82rem; border:1px solid rgba(42,27,18,0.25); font-weight:600; min-width:42px; text-align:center;}
+  .size-chip.active{background:var(--rust); color:#fff; border-color:var(--rust);}
+  .qty-stepper{display:inline-flex; align-items:center; border:1px solid rgba(42,27,18,0.25); border-radius:8px; overflow:hidden;}
+  .qty-stepper button{width:36px; height:36px; font-size:1.1rem; font-weight:700; color:var(--espresso);}
+  .qty-stepper span{width:36px; text-align:center; font-weight:700;}
+  .modal-out{background:#fdf2e9; border:1px solid rgba(181,69,31,0.3); color:#7a3a1a; padding:12px; border-radius:8px; font-size:0.85rem; margin-bottom:14px;}
+  .modal-add-btn{width:100%; background:var(--rust); color:#fff; padding:14px; border-radius:9px; font-weight:700; font-size:0.95rem;}
+
+  .confirm-overlay{position:fixed; inset:0; background:rgba(33,27,22,0.6); z-index:110; display:none; align-items:center; justify-content:center; padding:20px;}
+  .confirm-overlay.open{display:flex;}
+  .confirm-box{background:var(--cream-2); border-radius:14px; max-width:340px; width:100%; padding:22px;}
+  .confirm-box p{font-size:0.92rem; margin-bottom:18px;}
+  .confirm-actions{display:flex; gap:10px;}
+  .confirm-actions button{flex:1; padding:11px; border-radius:8px; font-weight:700; font-size:0.88rem;}
+  .confirm-no{background:rgba(42,27,18,0.08); color:var(--charcoal);}
+  .confirm-yes{background:var(--rust); color:#fff;}
+
+  .drawer-overlay{position:fixed; inset:0; background:rgba(33,27,22,0.5); z-index:90; display:none;}
+  .drawer-overlay.open{display:block;}
+  .drawer{position:fixed; top:0; right:0; height:100%; width:min(420px,100%); background:var(--cream-2); z-index:91; transform:translateX(100%); transition:transform .25s ease; display:flex; flex-direction:column; box-shadow:-10px 0 30px rgba(0,0,0,0.25);}
+  .drawer.open{transform:translateX(0);}
+  .drawer-head{padding:18px 20px; background:var(--espresso); color:var(--cream); display:flex; justify-content:space-between; align-items:center;}
+  .drawer-head h3{font-family:var(--display);}
+  .drawer-close{color:var(--cream); font-size:1.3rem;}
+  .drawer-body{flex:1; overflow-y:auto; padding:16px 20px;}
+  .section-label{font-family:var(--display); font-size:1rem; margin:18px 0 10px; padding-top:14px; border-top:1px solid rgba(42,27,18,0.12);}
+  .section-label:first-child{margin-top:0; padding-top:0; border-top:none;}
+  .cart-item{display:flex; gap:12px; padding:12px 0; border-bottom:1px solid rgba(42,27,18,0.1); align-items:center;}
+  .cart-item .thumb-mini{width:56px; height:56px; border-radius:6px; background:linear-gradient(160deg,var(--leather-light),var(--espresso-2)); flex-shrink:0; display:flex; align-items:center; justify-content:center;}
+  .cart-item .thumb-mini svg{width:70%;}
+  .cart-item .ci-body{flex:1;}
+  .cart-item h5{font-size:0.9rem; font-family:var(--display);}
+  .cart-item .meta{font-size:0.76rem; color:#7a6c5c; margin-bottom:6px;}
+  .ci-controls{display:flex; align-items:center; gap:10px;}
+  .ci-qty{display:inline-flex; align-items:center; border:1px solid rgba(42,27,18,0.25); border-radius:6px;}
+  .ci-qty button{width:26px; height:26px; font-size:0.95rem; font-weight:700;}
+  .ci-qty span{width:24px; text-align:center; font-size:0.82rem; font-weight:700;}
+  .ci-remove{font-size:0.76rem; color:var(--rust-dark); font-weight:600;}
+  .empty-cart{text-align:center; padding:40px 10px; color:#8a7d6f; font-size:0.9rem;}
+  .drawer-foot{padding:16px 20px 26px; border-top:1px solid rgba(42,27,18,0.12);}
+  .row-between{display:flex; justify-content:space-between; font-size:0.88rem; margin-bottom:8px;}
+  .row-between.total{font-weight:800; font-size:1rem; margin-top:10px;}
+  .field{margin-bottom:12px;}
+  .field label{display:block; font-size:0.78rem; font-weight:600; margin-bottom:5px; color:#5c4f43;}
+  .field select, .field input{width:100%; padding:10px; border-radius:6px; border:1px solid rgba(42,27,18,0.25); font-size:0.88rem; background:#fff;}
+  .pay-method-row{display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;}
+  .pay-method-chip{padding:8px 13px; border-radius:8px; font-size:0.8rem; font-weight:600; border:1px solid rgba(42,27,18,0.25);}
+  .pay-method-chip.active{background:var(--espresso); color:var(--cream); border-color:var(--espresso);}
+  .pay-details{background:#fff; border:1px solid rgba(42,27,18,0.15); border-radius:10px; padding:14px; margin-bottom:14px;}
+  .pay-details .pd-row{display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;}
+  .pay-details .pd-label{font-size:0.76rem; color:#7a6c5c; font-weight:600;}
+  .pay-details .pd-value{font-family:var(--display); font-size:1.05rem; letter-spacing:0.02em;}
+  .copy-btn{background:var(--espresso); color:var(--cream); font-size:0.72rem; font-weight:700; padding:6px 11px; border-radius:6px;}
+  .copy-btn.copied{background:var(--green);}
+  .pay-steps{font-size:0.78rem; color:#5c4f43; padding-left:18px; margin-top:6px;}
+  .pay-steps li{margin-bottom:3px;}
+  .checkbox-row{display:flex; align-items:flex-start; gap:8px; font-size:0.83rem; margin:12px 0; color:#5c4f43;}
+  .checkbox-row input{width:16px; height:16px; margin-top:2px;}
+  .place-order{width:100%; background:var(--rust); color:#fff; padding:13px; border-radius:8px; font-weight:700; margin-top:6px;}
+  .place-order:disabled{background:#c9b7a6; cursor:not-allowed;}
+  .order-status{background:#fdf2e9; border:1px solid rgba(181,69,31,0.3); border-radius:8px; padding:12px; font-size:0.82rem; color:#7a3a1a; margin-top:10px; display:none;}
+  .order-status.show{display:block;}
+
+  footer{background:var(--espresso); color:rgba(237,227,208,0.55); text-align:center; padding:28px 20px 100px; font-size:0.8rem;}
+  footer a{color:var(--gold); font-weight:600;}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="topnav-inner">
+    <div>
+      <div class="brand-mark">Prime Wear Collections 254</div>
+      <div class="brand-sub">Shoes for every step</div>
+    </div>
+  </div>
+</nav>
+
+<div class="shoe-hero">
+  <div class="shoe-hero-inner">
+    <div class="eyebrow">PRIME WEAR COLLECTIONS 254</div>
+    <h1>Every pair has a <span class="stitch">shelf</span> here.</h1>
+    <p class="lede">Sneakers to seal a deal, boots for the mud, sandals for the heat, and something small for the kids. Tap a pair to see it properly, then add it to your order.</p>
+    <div class="hero-cta-row">
+      <a href="#catalog" class="btn-primary">Browse the shelves</a>
+      <button class="btn-ghost" onclick="scrollToFilter('official')">Shop official wear</button>
+    </div>
+  </div>
+</div>
+<div class="shelf-strip"><div class="track" id="shelfTrack"></div></div>
+
+<div class="catalog-wrap" id="catalog">
+  <div class="catalog-head">
+    <h2>The shelves</h2>
+    <p>Tap any pair to see sizes, colours and details before you add it to your order.</p>
+  </div>
+  <div class="filter-row" id="filterRow"></div>
+  <div class="shoe-grid" id="shoeGrid"></div>
+</div>
+
+<footer>Prime Wear Collections 254 — part of <a href="collective-254.html">The Collective 254</a>, a shared shop window for local sellers.</footer>
+
+<button class="fab-order" id="fabOrder">
+  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 8H18L17 20H7L6 8Z" stroke="white" stroke-width="2" stroke-linejoin="round"/><path d="M9 8V6a3 3 0 0 1 6 0v2" stroke="white" stroke-width="2"/></svg>
+  My Order <span class="fab-count" id="fabCount">0</span>
+</button>
+<div class="toast" id="toast"></div>
+
+<div class="modal-overlay" id="productModalOverlay"><div class="product-modal" id="productModal"></div></div>
+
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <p id="confirmText"></p>
+    <div class="confirm-actions">
+      <button class="confirm-no" id="confirmNo">No, that's enough</button>
+      <button class="confirm-yes" id="confirmYes">Yes, add more</button>
+    </div>
+  </div>
+</div>
+
+<div class="drawer-overlay" id="overlay"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-head"><h3>My Order</h3><button class="drawer-close" id="closeCart">✕</button></div>
+  <div class="drawer-body" id="drawerBody"></div>
+  <div class="drawer-foot" id="drawerFoot"></div>
+</div>
+
+<script>
+/* ---------- ICONS (base fill colour marked so it can be recoloured) ---------- */
+const sneakerSvg = `<svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg"><path d="M10 90 C10 70 25 55 55 52 C80 50 90 35 120 38 C150 41 165 55 178 58 C190 61 195 72 190 85 C185 98 165 100 130 98 L25 98 C15 98 10 96 10 90 Z" fill="#EDE3D0" stroke="#2A1B12" stroke-width="3"/><path d="M55 52 L65 88" stroke="#2A1B12" stroke-width="2"/><path d="M78 46 L86 88" stroke="#2A1B12" stroke-width="2"/><path d="M100 40 L104 88" stroke="#2A1B12" stroke-width="2"/><path d="M122 40 L122 88" stroke="#2A1B12" stroke-width="2"/><path d="M10 90 L190 90" stroke="#B5451F" stroke-width="6"/></svg>`;
+const bootSvg = `<svg viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg"><path d="M60 10 L120 10 L120 70 C150 75 178 85 185 100 C190 112 182 118 165 118 L30 118 C18 118 12 112 14 100 L28 60 L60 60 Z" fill="#EDE3D0" stroke="#2A1B12" stroke-width="3"/><path d="M70 25 L110 25 M70 40 L110 40 M70 55 L108 55" stroke="#2A1B12" stroke-width="2"/><path d="M14 100 L185 100" stroke="#B5451F" stroke-width="6"/></svg>`;
+const sandalSvg = `<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg"><ellipse cx="100" cy="70" rx="85" ry="22" fill="#EDE3D0" stroke="#2A1B12" stroke-width="3"/><path d="M40 55 C60 20 140 20 160 55" fill="none" stroke="#B5451F" stroke-width="6"/><path d="M100 22 L100 55" stroke="#2A1B12" stroke-width="3"/></svg>`;
+const officialSvg = `<svg viewBox="0 0 200 110" xmlns="http://www.w3.org/2000/svg"><path d="M10 85 C10 65 30 50 60 48 C95 46 110 30 140 33 C165 36 185 48 190 65 C193 78 185 90 165 90 L25 90 C15 90 10 88 10 85 Z" fill="#3A2618" stroke="#2A1B12" stroke-width="3"/><path d="M10 85 L190 85" stroke="#C89B4A" stroke-width="5"/><path d="M60 48 L66 82" stroke="#EDE3D0" stroke-width="1.5"/></svg>`;
+const kidsSvg = `<svg viewBox="0 0 200 110" xmlns="http://www.w3.org/2000/svg"><path d="M20 85 C20 68 35 58 58 56 C82 54 90 42 115 45 C140 48 155 58 168 62 C178 65 182 74 178 84 C174 94 158 96 130 94 L35 94 C24 94 20 90 20 85 Z" fill="#EDE3D0" stroke="#2A1B12" stroke-width="3"/><circle cx="90" cy="70" r="5" fill="#B5451F"/><path d="M20 85 L178 85" stroke="#8B4A2B" stroke-width="5"/></svg>`;
+
+const COLOR_HEX = {Black:'#232019', White:'#F5EFE2', Grey:'#8C8579', Brown:'#6B4226', Tan:'#C9A172', Navy:'#232C42', Pink:'#D98CA0', Blue:'#3E6E9E'};
+function recolorSvg(svg, colorName){
+  const hex = COLOR_HEX[colorName]; if(!hex) return svg;
+  return svg.replace(/#EDE3D0/g, hex).replace(/#3A2618/g, hex);
+}
+
+/* ---------- PRODUCT DATA ---------- */
+const PRODUCTS = [
+  {id:'sn1', name:'Street Runner Sneaker', cat:'sneakers', catLabel:'Sneakers', price:2800, sizes:[39,40,41,42,43,44], colors:['Black','White','Grey'], desc:'A light everyday sneaker built for walking, matatu rides and standing all day at work.', svg:sneakerSvg, stock:true},
+  {id:'sn2', name:'Court Classic Low-Top', cat:'sneakers', catLabel:'Sneakers', price:3200, sizes:[38,39,40,41,42], colors:['White','Black'], desc:'A clean low-top that pairs with jeans or a simple outfit — the one you wear everywhere.', svg:sneakerSvg, stock:true},
+  {id:'sn3', name:'Trail Grip Sneaker', cat:'sneakers', catLabel:'Sneakers', price:3500, sizes:[40,41,42,43,44,45], colors:['Brown','Black'], desc:'Thicker sole with better grip — good for rough roads and rainy days.', svg:sneakerSvg, stock:false},
+  {id:'of1', name:'Oxford Formal Lace-Up', cat:'official', catLabel:'Official Wear', price:4200, sizes:[40,41,42,43,44], colors:['Black','Brown'], desc:'A polished lace-up for the office, interviews or a wedding.', svg:officialSvg, stock:true},
+  {id:'of2', name:'Derby Office Shoe', cat:'official', catLabel:'Official Wear', price:3900, sizes:[39,40,41,42,43,44], colors:['Black'], desc:'A slightly more relaxed formal shoe — comfortable enough for a long office day.', svg:officialSvg, stock:true},
+  {id:'bt1', name:'Trench Ankle Boot', cat:'boots', catLabel:'Boots', price:4500, sizes:[40,41,42,43,44], colors:['Brown','Black'], desc:'An ankle boot that handles mud and dust without looking out of place in town.', svg:bootSvg, stock:true},
+  {id:'bt2', name:'Work Site Boot', cat:'boots', catLabel:'Boots', price:5200, sizes:[41,42,43,44,45], colors:['Tan'], desc:'A sturdier boot for site work — reinforced toe area, thick sole.', svg:bootSvg, stock:true},
+  {id:'sd1', name:'Everyday Slide', cat:'sandals', catLabel:'Sandals & Slides', price:1500, sizes:[39,40,41,42,43,44], colors:['Black','Navy'], desc:'A simple slide for the house, the shower, or a quick errand.', svg:sandalSvg, stock:true},
+  {id:'sd2', name:'Woven Strap Sandal', cat:'sandals', catLabel:'Sandals & Slides', price:1800, sizes:[38,39,40,41,42], colors:['Tan','Brown'], desc:'A woven-strap sandal that still looks smart enough for casual outings.', svg:sandalSvg, stock:true},
+  {id:'kd1', name:'School Run Sneaker (Kids)', cat:'kids', catLabel:'Kids', price:1900, sizes:[28,29,30,31,32,33], colors:['Black','White'], desc:'A durable everyday sneaker sized for school-age kids.', svg:kidsSvg, stock:true},
+  {id:'kd2', name:'Little Steps Sandal (Kids)', cat:'kids', catLabel:'Kids', price:1200, sizes:[24,25,26,27,28], colors:['Pink','Blue'], desc:'A light sandal for toddlers — easy to strap on and off.', svg:kidsSvg, stock:true},
+];
+const CATS = [
+  {id:'all', label:'All shoes'},{id:'sneakers', label:'Sneakers'},{id:'official', label:'Official Wear'},
+  {id:'boots', label:'Boots'},{id:'sandals', label:'Sandals & Slides'},{id:'kids', label:'Kids'},
+];
+const AREAS = [
+  {id:'town', label:'Nakuru Town (within 3km)', fee:100},
+  {id:'nearby', label:'Nearby estate (3–10km)', fee:200},
+  {id:'far', label:'Outside town / further out', fee:350},
+];
+const PAY_METHODS = {
+  till:{label:'Buy Goods (Till)', number:'000000', numLabel:'Till Number', steps:['Go to M-Pesa on your phone','Select Lipa na M-Pesa, then Buy Goods and Services','Enter the till number above','Enter the total amount, then your M-Pesa PIN']},
+  paybill:{label:'Paybill', number:'000000', account:'PRIMEWEAR', numLabel:'Paybill Number', steps:['Go to M-Pesa on your phone','Select Lipa na M-Pesa, then Pay Bill','Enter the paybill number, then the account number above','Enter the total amount, then your M-Pesa PIN']},
+  pochi:{label:'Pochi / Phone Number', number:'07XX XXX XXX', numLabel:'Phone Number', steps:['Go to M-Pesa on your phone','Select Send Money','Enter the phone number above','Enter the total amount, then your M-Pesa PIN']},
+};
+
+let activeFilter = 'all';
+let cart = [];
+let currentModalProduct = null;
+let modalColor = null, modalSize = null, modalQty = 1;
+let selectedArea = AREAS[0].id;
+let selectedPayMethod = 'till';
+let pendingConfirm = null;
+
+function scrollToFilter(cat){
+  activeFilter = cat; renderFilters(); renderGrid();
+  setTimeout(()=>document.getElementById('catalog').scrollIntoView({behavior:'smooth'}), 50);
+}
+
+const shelfWords = ['SNEAKERS','OFFICIAL WEAR','BOOTS','SANDALS & SLIDES','KIDS SHOES','SIZE 38–45','PRIME WEAR COLLECTIONS 254'];
+document.getElementById('shelfTrack').innerHTML = shelfWords.concat(shelfWords).map(w=>`<span>${w}</span>`).join('&nbsp;&nbsp;&nbsp;&nbsp;');
+
+function renderFilters(){
+  const row = document.getElementById('filterRow');
+  row.innerHTML = CATS.map(c=>`<button class="filter-chip ${c.id===activeFilter?'active':''}" data-cat="${c.id}">${c.label}</button>`).join('');
+  row.querySelectorAll('.filter-chip').forEach(chip=>chip.addEventListener('click', ()=>{ activeFilter = chip.dataset.cat; renderFilters(); renderGrid(); }));
+}
+function renderGrid(){
+  const grid = document.getElementById('shoeGrid');
+  const items = PRODUCTS.filter(p=>activeFilter==='all' || p.cat===activeFilter);
+  grid.innerHTML = items.map(p=>`
+    <div class="shoe-card" onclick="openProductModal('${p.id}')">
+      <div class="thumb">
+        <span class="cat-tag">${p.catLabel}</span>
+        ${!p.stock ? `<span class="out-tag">Out of stock</span>` : ''}
+        ${recolorSvg(p.svg, p.colors[0])}
+      </div>
+      <div class="info">
+        <h4>${p.name}</h4>
+        <div class="price">KSh ${p.price.toLocaleString()}</div>
+        <div class="sizes">Sizes: ${p.sizes.join(', ')}</div>
+        <div class="view-details-hint">See details & sizes →</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(()=>t.classList.remove('show'), 2400);
+}
+
+function openProductModal(id){
+  const p = PRODUCTS.find(pp=>pp.id===id);
+  currentModalProduct = p; modalColor = p.colors[0]; modalSize = p.sizes[0]; modalQty = 1;
+  renderProductModal();
+  document.getElementById('productModalOverlay').classList.add('open');
+}
+function closeProductModal(){ document.getElementById('productModalOverlay').classList.remove('open'); }
+function renderProductModal(){
+  const p = currentModalProduct;
+  const box = document.getElementById('productModal');
+  box.innerHTML = `
+    <button class="modal-close" onclick="closeProductModal()">✕</button>
+    <div class="modal-thumb">${recolorSvg(p.svg, modalColor)}</div>
+    <div class="modal-body">
+      <div class="modal-cat">${p.catLabel}</div>
+      <h2>${p.name}</h2>
+      <div class="modal-price">KSh ${p.price.toLocaleString()}</div>
+      <div class="modal-desc">${p.desc}</div>
+      ${!p.stock ? `<div class="modal-out">Currently out of stock — expected back in about 5 days. You can still browse, but ordering is off for now.</div>` : `
+      <div class="modal-section">
+        <label>Colour — picture updates to match</label>
+        <div class="swatch-row" id="colorRow">
+          ${p.colors.map(c=>`<button class="swatch-chip ${c===modalColor?'active':''}" data-color="${c}"><span class="dot" style="background:${COLOR_HEX[c]||'#ccc'}"></span>${c}</button>`).join('')}
+        </div>
+      </div>
+      <div class="modal-section">
+        <label>Size</label>
+        <div class="size-row" id="sizeRow">
+          ${p.sizes.map(s=>`<button class="size-chip ${s===modalSize?'active':''}" data-size="${s}">${s}</button>`).join('')}
+        </div>
+      </div>
+      <div class="modal-section">
+        <label>How many pairs</label>
+        <div class="qty-stepper"><button onclick="changeModalQty(-1)">−</button><span id="modalQtyDisplay">${modalQty}</span><button onclick="changeModalQty(1)">+</button></div>
+      </div>
+      <button class="modal-add-btn" onclick="confirmAddFromModal()">Add ${modalQty} to My Order — KSh ${(p.price*modalQty).toLocaleString()}</button>
+      `}
+    </div>
+  `;
+  if(p.stock){
+    box.querySelectorAll('.swatch-chip').forEach(el=>el.addEventListener('click', ()=>{ modalColor = el.dataset.color; renderProductModal(); }));
+    box.querySelectorAll('.size-chip').forEach(el=>el.addEventListener('click', ()=>{ modalSize = Number(el.dataset.size); renderProductModal(); }));
+  }
+}
+function changeModalQty(delta){ modalQty = Math.max(1, modalQty+delta); renderProductModal(); }
+
+function confirmAddFromModal(){
+  const p = currentModalProduct;
+  const existing = cart.find(c=>c.id===p.id && c.size===modalSize && c.color===modalColor);
+  if(existing){
+    pendingConfirm = {existing, qty:modalQty};
+    document.getElementById('confirmText').textContent = `You already have ${existing.qty} of the ${p.name} (size ${modalSize}, ${modalColor}) in your order. Add ${modalQty} more?`;
+    document.getElementById('confirmOverlay').classList.add('open');
+  } else {
+    cart.push({id:p.id, size:modalSize, color:modalColor, qty:modalQty});
+    updateFab(); showToast('Added to My Order'); renderDrawer(); closeProductModal();
+  }
+}
+document.getElementById('confirmYes').addEventListener('click', ()=>{
+  if(pendingConfirm){ pendingConfirm.existing.qty += pendingConfirm.qty; updateFab(); showToast(`Added — now ${pendingConfirm.existing.qty} in your order`); renderDrawer(); }
+  document.getElementById('confirmOverlay').classList.remove('open'); pendingConfirm = null; closeProductModal();
+});
+document.getElementById('confirmNo').addEventListener('click', ()=>{
+  document.getElementById('confirmOverlay').classList.remove('open'); pendingConfirm = null; closeProductModal();
+});
+
+const overlay = document.getElementById('overlay');
+const drawer = document.getElementById('drawer');
+document.getElementById('fabOrder').addEventListener('click', ()=>{ renderDrawer(); overlay.classList.add('open'); drawer.classList.add('open'); });
+document.getElementById('closeCart').addEventListener('click', closeDrawer);
+overlay.addEventListener('click', closeDrawer);
+function closeDrawer(){ overlay.classList.remove('open'); drawer.classList.remove('open'); }
+
+function updateFab(){ document.getElementById('fabCount').textContent = cart.reduce((a,c)=>a+c.qty,0); }
+function cartTotal(){ return cart.reduce((sum,c)=>sum + PRODUCTS.find(p=>p.id===c.id).price*c.qty, 0); }
+function changeLineQty(idx, delta){ cart[idx].qty += delta; if(cart[idx].qty<=0) cart.splice(idx,1); updateFab(); renderDrawer(); }
+function removeLine(idx){ cart.splice(idx,1); updateFab(); renderDrawer(); }
+
+function renderDrawer(){
+  const body = document.getElementById('drawerBody');
+  const foot = document.getElementById('drawerFoot');
+  if(cart.length===0){
+    body.innerHTML = `<div class="empty-cart">Nothing in your order yet.<br>Tap a pair above to get started.</div>`;
+    foot.innerHTML = ''; return;
+  }
+  body.innerHTML = `<div class="section-label">Items you've chosen</div>` + cart.map((c,idx)=>{
+    const p = PRODUCTS.find(pp=>pp.id===c.id);
+    return `<div class="cart-item">
+      <div class="thumb-mini">${recolorSvg(p.svg, c.color)}</div>
+      <div class="ci-body">
+        <h5>${p.name}</h5>
+        <div class="meta">Size ${c.size} · ${c.color} · KSh ${(p.price*c.qty).toLocaleString()}</div>
+        <div class="ci-controls">
+          <div class="ci-qty"><button onclick="changeLineQty(${idx},-1)">−</button><span>${c.qty}</span><button onclick="changeLineQty(${idx},1)">+</button></div>
+          <div class="ci-remove" onclick="removeLine(${idx})">Remove</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  const subtotal = cartTotal();
+  const areaFee = AREAS.find(a=>a.id===selectedArea).fee;
+  const total = subtotal + areaFee;
+  const pm = PAY_METHODS[selectedPayMethod];
+
+  foot.innerHTML = `
+    <div class="section-label" style="margin-top:0;border-top:none;padding-top:0;">Delivery</div>
+    <div class="field"><label>Delivery area</label>
+      <select id="areaSelect">${AREAS.map(a=>`<option value="${a.id}" ${a.id===selectedArea?'selected':''}>${a.label} — KSh ${a.fee}</option>`).join('')}</select>
+    </div>
+    <div class="row-between"><span>Items subtotal</span><span>KSh ${subtotal.toLocaleString()}</span></div>
+    <div class="row-between"><span>Delivery</span><span>KSh ${areaFee}</span></div>
+    <div class="row-between total"><span>Total to pay</span><span>KSh ${total.toLocaleString()}</span></div>
+
+    <div class="section-label">How you'll pay</div>
+    <div class="pay-method-row" id="payMethodRow">
+      ${Object.keys(PAY_METHODS).map(k=>`<button class="pay-method-chip ${k===selectedPayMethod?'active':''}" data-method="${k}">${PAY_METHODS[k].label}</button>`).join('')}
+    </div>
+    <div class="pay-details">
+      <div class="pd-row"><div><div class="pd-label">${pm.numLabel}</div><div class="pd-value">${pm.number}</div></div><button class="copy-btn" id="copyNumBtn">Copy</button></div>
+      ${pm.account ? `<div class="pd-row"><div><div class="pd-label">Account Number</div><div class="pd-value">${pm.account}</div></div><button class="copy-btn" id="copyAccBtn">Copy</button></div>` : ''}
+      <ol class="pay-steps">${pm.steps.map(s=>`<li>${s}</li>`).join('')}</ol>
+      <div style="font-size:0.72rem;color:#8a7d6f;margin-top:8px;">Placeholder number for now — Prime Wear Collections 254 to confirm their real ${pm.numLabel.toLowerCase()}.</div>
+    </div>
+
+    <div class="field"><label>M-Pesa sender name</label><input type="text" id="senderName" placeholder="Name shown on the M-Pesa message"></div>
+    <div class="field"><label>Delivery phone number</label><input type="text" id="phoneNum" placeholder="07XX XXX XXX"></div>
+    <div class="checkbox-row"><input type="checkbox" id="paidCheck"><label for="paidCheck">I've sent KSh ${total.toLocaleString()} via M-Pesa for this order</label></div>
+    <button class="place-order" id="placeOrderBtn">Submit order for confirmation</button>
+    <div class="order-status" id="orderStatus"></div>
+  `;
+
+  document.getElementById('areaSelect').addEventListener('change', (e)=>{ selectedArea = e.target.value; renderDrawer(); });
+  document.querySelectorAll('.pay-method-chip').forEach(el=>el.addEventListener('click', ()=>{ selectedPayMethod = el.dataset.method; renderDrawer(); }));
+  document.getElementById('copyNumBtn').addEventListener('click', (e)=>copyText(pm.number, e.target));
+  const accBtn = document.getElementById('copyAccBtn');
+  if(accBtn) accBtn.addEventListener('click', (e)=>copyText(pm.account, e.target));
+  document.getElementById('placeOrderBtn').addEventListener('click', placeOrder);
+}
+
+function copyText(text, btn){
+  navigator.clipboard?.writeText(text).then(()=>{
+    const orig = btn.textContent; btn.textContent = 'Copied'; btn.classList.add('copied');
+    setTimeout(()=>{ btn.textContent = orig; btn.classList.remove('copied'); }, 1400);
+  }).catch(()=>{ showToast('Long-press the number to copy it'); });
+}
+
+function placeOrder(){
+  const paid = document.getElementById('paidCheck').checked;
+  const sender = document.getElementById('senderName').value.trim();
+  const phone = document.getElementById('phoneNum').value.trim();
+  const status = document.getElementById('orderStatus');
+  if(!paid){ status.textContent = "Please confirm you've sent the M-Pesa payment before submitting."; status.classList.add('show'); return; }
+  if(!sender || !phone){ status.textContent = "Add the M-Pesa sender name and a phone number for delivery."; status.classList.add('show'); return; }
+  status.textContent = `Order sent to Prime Wear Collections 254 as pending. They'll confirm your payment from ${sender} and reach you on ${phone} to arrange delivery.`;
+  status.classList.add('show');
+  document.getElementById('placeOrderBtn').disabled = true;
+  document.getElementById('placeOrderBtn').textContent = 'Pending seller confirmation…';
+}
+
+renderFilters();
+renderGrid();
+updateFab();
+</script>
+</body>
+</html>
