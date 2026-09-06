@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Prime Wear Collections 254 — Shoes for Every Step</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;600;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --espresso:#2A1B12; --espresso-2:#3A2618; --leather:#8B4A2B; --leather-light:#A9683F;
     --cream:#EDE3D0; --cream-2:#F6F0E4; --rust:#B5451F; --rust-dark:#8F3517; --charcoal:#211B16;
     --gold:#C89B4A; --green:#3f7a4d; --line:rgba(200,155,74,0.35);
-    --display:'Roboto Slab', serif; --body:'Inter', sans-serif;
+    --display:'Fraunces', serif; --body:'Inter', sans-serif;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   html{scroll-behavior:smooth;}
@@ -37,11 +37,21 @@
     background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='140' viewBox='0 0 220 140'><g fill='none' stroke='%23C89B4A' stroke-width='2'><path d='M10 100 C10 80 30 60 60 58 C90 56 100 40 130 42 C160 44 175 60 190 62 C205 64 210 78 205 92 C200 106 180 108 150 106 L30 106 C18 106 10 104 10 100 Z'/><path d='M60 58 L70 90'/><path d='M85 52 L92 90'/><path d='M110 44 L112 90'/></g></svg>");
     background-size:220px 140px; background-repeat:repeat; animation:driftShoes 90s linear infinite;}
   @keyframes driftShoes{ from{background-position:0 0;} to{background-position:-1000px 600px;} }
+  @media (max-width:640px){ .shoe-hero::before{ opacity:0.17; background-size:150px 96px; } }
   .shoe-hero-inner{position:relative; z-index:1; max-width:900px; margin:0 auto; text-align:center;}
-  .shoe-hero .eyebrow{color:var(--gold); font-weight:600; letter-spacing:0.03em; margin-bottom:14px; font-size:0.9rem;}
-  .shoe-hero h1{font-family:var(--display); font-weight:800; font-size:clamp(2.1rem,5.5vw,3.6rem); line-height:1.08; margin-bottom:16px;}
-  .shoe-hero h1 .stitch{display:inline-block; border-bottom:3px dashed var(--gold); padding-bottom:2px;}
-  .shoe-hero p.lede{color:rgba(237,227,208,0.82); max-width:540px; margin:0 auto 30px; font-size:1.05rem;}
+  .shoe-hero .eyebrow{
+    display:inline-flex; align-items:center; gap:8px; color:var(--gold); font-weight:700;
+    letter-spacing:0.1em; margin-bottom:20px; font-size:0.74rem; text-transform:uppercase;
+    background:rgba(200,155,74,0.14); border:1px solid rgba(200,155,74,0.45);
+    padding:8px 18px; border-radius:999px;
+  }
+  .shoe-hero h1{font-family:var(--display); font-weight:800; font-size:clamp(2.3rem,6vw,3.8rem); line-height:1.06; margin-bottom:4px; text-shadow:0 6px 24px rgba(0,0,0,0.4); letter-spacing:-0.01em;}
+  .shoe-hero h1 .stitch{
+    display:inline-block; padding-bottom:3px; border-bottom:3px dashed var(--gold);
+    background:linear-gradient(90deg,#E9CE94,var(--gold)); -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .hero-divider{width:52px; height:2px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin:22px auto; opacity:0.8;}
+  .shoe-hero p.lede{font-family:var(--display); font-style:italic; font-weight:500; color:rgba(237,227,208,0.88); max-width:540px; margin:0 auto 30px; font-size:1.15rem; line-height:1.5;}
   .hero-cta-row{display:flex; gap:14px; justify-content:center; flex-wrap:wrap;}
   .btn-primary{background:var(--rust); color:#fff; padding:14px 26px; border-radius:8px; font-weight:700; font-size:0.95rem; box-shadow:0 10px 22px rgba(181,69,31,0.35);}
   .btn-ghost{border:1px solid rgba(237,227,208,0.4); color:var(--cream); padding:13px 24px; border-radius:8px; font-weight:600; font-size:0.95rem;}
@@ -170,8 +180,9 @@
 
 <div class="shoe-hero">
   <div class="shoe-hero-inner">
-    <div class="eyebrow">PRIME WEAR COLLECTIONS 254</div>
+    <div class="eyebrow">◆ PRIME WEAR COLLECTIONS 254</div>
     <h1>Every pair has a <span class="stitch">shelf</span> here.</h1>
+    <div class="hero-divider"></div>
     <p class="lede">Sneakers to seal a deal, boots for the mud, sandals for the heat, and something small for the kids. Tap a pair to see it properly, then add it to your order.</p>
     <div class="hero-cta-row">
       <a href="#catalog" class="btn-primary">Browse the shelves</a>
