@@ -162,6 +162,7 @@
   .place-order:disabled{background:#c9b7a6; cursor:not-allowed;}
   .order-status{background:#fdf2e9; border:1px solid rgba(181,69,31,0.3); border-radius:8px; padding:12px; font-size:0.82rem; color:#7a3a1a; margin-top:10px; display:none;}
   .order-status.show{display:block;}
+  .order-status.error{background:#fdeaea; border-color:rgba(181,31,31,0.3); color:#7a1a1a;}
 
   footer{background:var(--espresso); color:rgba(237,227,208,0.55); text-align:center; padding:28px 20px 100px; font-size:0.8rem;}
   footer a{color:var(--gold); font-weight:600;}
@@ -231,6 +232,10 @@
 </div>
 
 <script>
+/* ---------- BACKEND ---------- */
+const BACKEND_URL = 'https://collective-254.onrender.com';
+const SELLER_ID = 'prime-wear';
+
 /* ---------- ICONS (base fill colour marked so it can be recoloured) ---------- */
 const sneakerSvg = `<svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg"><path d="M10 90 C10 70 25 55 55 52 C80 50 90 35 120 38 C150 41 165 55 178 58 C190 61 195 72 190 85 C185 98 165 100 130 98 L25 98 C15 98 10 96 10 90 Z" fill="#EDE3D0" stroke="#2A1B12" stroke-width="3"/><path d="M55 52 L65 88" stroke="#2A1B12" stroke-width="2"/><path d="M78 46 L86 88" stroke="#2A1B12" stroke-width="2"/><path d="M100 40 L104 88" stroke="#2A1B12" stroke-width="2"/><path d="M122 40 L122 88" stroke="#2A1B12" stroke-width="2"/><path d="M10 90 L190 90" stroke="#B5451F" stroke-width="6"/></svg>`;
 const bootSvg = `<svg viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg"><path d="M60 10 L120 10 L120 70 C150 75 178 85 185 100 C190 112 182 118 165 118 L30 118 C18 118 12 112 14 100 L28 60 L60 60 Z" fill="#EDE3D0" stroke="#2A1B12" stroke-width="3"/><path d="M70 25 L110 25 M70 40 L110 40 M70 55 L108 55" stroke="#2A1B12" stroke-width="2"/><path d="M14 100 L185 100" stroke="#B5451F" stroke-width="6"/></svg>`;
@@ -468,17 +473,52 @@ function copyText(text, btn){
   }).catch(()=>{ showToast('Long-press the number to copy it'); });
 }
 
-function placeOrder(){
+async function placeOrder(){
   const paid = document.getElementById('paidCheck').checked;
   const sender = document.getElementById('senderName').value.trim();
   const phone = document.getElementById('phoneNum').value.trim();
   const status = document.getElementById('orderStatus');
+  status.classList.remove('error');
+
   if(!paid){ status.textContent = "Please confirm you've sent the M-Pesa payment before submitting."; status.classList.add('show'); return; }
   if(!sender || !phone){ status.textContent = "Add the M-Pesa sender name and a phone number for delivery."; status.classList.add('show'); return; }
-  status.textContent = `Order sent to Prime Wear Collections 254 as pending. They'll confirm your payment from ${sender} and reach you on ${phone} to arrange delivery.`;
-  status.classList.add('show');
-  document.getElementById('placeOrderBtn').disabled = true;
-  document.getElementById('placeOrderBtn').textContent = 'Pending seller confirmation…';
+
+  const btn = document.getElementById('placeOrderBtn');
+  btn.disabled = true;
+  btn.textContent = 'Submitting…';
+
+  const subtotal = cartTotal();
+  const areaFee = AREAS.find(a=>a.id===selectedArea).fee;
+  const total = subtotal + areaFee;
+  const items = cart.map(c=>{
+    const p = PRODUCTS.find(pp=>pp.id===c.id);
+    return {name:p.name, size:c.size, color:c.color, qty:c.qty, price:p.price};
+  });
+
+  try{
+    const res = await fetch(BACKEND_URL + '/api/order', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        seller: SELLER_ID,
+        buyer_name: sender,
+        phone: phone,
+        area: selectedArea,
+        items: items,
+        amount: total
+      })
+    });
+    if(!res.ok) throw new Error('backend rejected the order');
+
+    status.textContent = `Order sent to Prime Wear Collections 254 as pending. They'll confirm your payment from ${sender} and reach you on ${phone} to arrange delivery.`;
+    status.classList.add('show');
+    btn.textContent = 'Pending seller confirmation…';
+  } catch(err){
+    status.textContent = "Couldn't reach the order system just now — your payment is still fine, but please also message Prime Wear Collections 254 directly so they know to expect it.";
+    status.classList.add('show', 'error');
+    btn.disabled = false;
+    btn.textContent = 'Submit order for confirmation';
+  }
 }
 
 renderFilters();
