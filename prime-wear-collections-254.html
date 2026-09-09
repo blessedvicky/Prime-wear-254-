@@ -416,7 +416,11 @@ document.getElementById('closeCart').addEventListener('click', closeDrawer);
 overlay.addEventListener('click', closeDrawer);
 function closeDrawer(){ overlay.classList.remove('open'); drawer.classList.remove('open'); }
 
-function updateFab(){ document.getElementById('fabCount').textContent = cart.reduce((a,c)=>a+c.qty,0); }
+function updateFab(){
+  const cartQty = cart.reduce((a,c)=>a+c.qty,0);
+  const pendingOrders = myOrders.filter(o=>o.status!=='confirmed').length;
+  document.getElementById('fabCount').textContent = cartQty + pendingOrders;
+}
 function cartTotal(){ return cart.reduce((sum,c)=>sum + PRODUCTS.find(p=>p.id===c.id).price*c.qty, 0); }
 function changeLineQty(idx, delta){ cart[idx].qty += delta; if(cart[idx].qty<=0) cart.splice(idx,1); saveCart(); updateFab(); renderDrawer(); }
 function removeLine(idx){ cart.splice(idx,1); saveCart(); updateFab(); renderDrawer(); }
@@ -579,6 +583,7 @@ async function checkMyOrdersStatus(){
   }
   if(changed){
     saveMyOrders();
+    updateFab();
     if(drawer.classList.contains('open')) renderDrawer();
   }
 }
