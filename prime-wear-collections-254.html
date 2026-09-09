@@ -139,6 +139,13 @@
   .ci-qty span{width:24px; text-align:center; font-size:0.82rem; font-weight:700;}
   .ci-remove{font-size:0.76rem; color:var(--rust-dark); font-weight:600;}
   .empty-cart{text-align:center; padding:40px 10px; color:#8a7d6f; font-size:0.9rem;}
+  .order-history-item{background:#fff; border:1px solid rgba(42,27,18,0.1); border-radius:8px; padding:10px 12px; margin-bottom:8px;}
+  .ohi-top{display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;}
+  .ohi-amount{font-weight:800; font-size:0.9rem;}
+  .ohi-items{font-size:0.78rem; color:#7a6c5c;}
+  .status-badge{font-size:0.7rem; font-weight:700; padding:3px 9px; border-radius:999px;}
+  .status-pending{background:#fdf2e9; color:#8f5a24;}
+  .status-confirmed{background:#e9f5ec; color:var(--green);}
   .drawer-foot{padding:16px 20px 30px;}
   .row-between{display:flex; justify-content:space-between; font-size:0.88rem; margin-bottom:8px;}
   .row-between.total{font-weight:800; font-size:1rem; margin-top:10px;}
@@ -273,11 +280,27 @@ const AREAS = [
 const PAYBILL = {label:'Paybill', number:'247247', account:'182193', numLabel:'Paybill Number', steps:['Go to M-Pesa on your phone','Select Lipa na M-Pesa, then Pay Bill','Enter the paybill number, then the account number above','Enter the total amount, then your M-Pesa PIN']};
 
 let activeFilter = 'all';
-let cart = [];
+let cart = loadCart();
 let currentModalProduct = null;
 let modalColor = null, modalSize = null, modalQty = 1;
 let selectedArea = AREAS[0].id;
 let pendingConfirm = null;
+let myOrders = loadMyOrders();
+let pollTimer = null;
+
+// ---------- Local persistence (survives refresh; buyer's own device only) ----------
+function loadCart(){
+  try{ return JSON.parse(localStorage.getItem('primewear_cart')) || []; } catch(e){ return []; }
+}
+function saveCart(){
+  try{ localStorage.setItem('primewear_cart', JSON.stringify(cart)); } catch(e){ /* storage unavailable, cart just won't persist */ }
+}
+function loadMyOrders(){
+  try{ return JSON.parse(localStorage.getItem('primewear_myorders')) || []; } catch(e){ return []; }
+}
+function saveMyOrders(){
+  try{ localStorage.setItem('primewear_myorders', JSON.stringify(myOrders)); } catch(e){ /* storage unavailable */ }
+}
 
 function scrollToFilter(cat){
   activeFilter = cat; renderFilters(); renderGrid();
@@ -374,11 +397,12 @@ function confirmAddFromModal(){
     document.getElementById('confirmOverlay').classList.add('open');
   } else {
     cart.push({id:p.id, size:modalSize, color:modalColor, qty:modalQty});
+    saveCart();
     updateFab(); showToast('Added to My Order'); renderDrawer(); closeProductModal();
   }
 }
 document.getElementById('confirmYes').addEventListener('click', ()=>{
-  if(pendingConfirm){ pendingConfirm.existing.qty += pendingConfirm.qty; updateFab(); showToast(`Added — now ${pendingConfirm.existing.qty} in your order`); renderDrawer(); }
+  if(pendingConfirm){ pendingConfirm.existing.qty += pendingConfirm.qty; saveCart(); updateFab(); showToast(`Added — now ${pendingConfirm.existing.qty} in your order`); renderDrawer(); }
   document.getElementById('confirmOverlay').classList.remove('open'); pendingConfirm = null; closeProductModal();
 });
 document.getElementById('confirmNo').addEventListener('click', ()=>{
@@ -394,17 +418,32 @@ function closeDrawer(){ overlay.classList.remove('open'); drawer.classList.remov
 
 function updateFab(){ document.getElementById('fabCount').textContent = cart.reduce((a,c)=>a+c.qty,0); }
 function cartTotal(){ return cart.reduce((sum,c)=>sum + PRODUCTS.find(p=>p.id===c.id).price*c.qty, 0); }
-function changeLineQty(idx, delta){ cart[idx].qty += delta; if(cart[idx].qty<=0) cart.splice(idx,1); updateFab(); renderDrawer(); }
-function removeLine(idx){ cart.splice(idx,1); updateFab(); renderDrawer(); }
+function changeLineQty(idx, delta){ cart[idx].qty += delta; if(cart[idx].qty<=0) cart.splice(idx,1); saveCart(); updateFab(); renderDrawer(); }
+function removeLine(idx){ cart.splice(idx,1); saveCart(); updateFab(); renderDrawer(); }
 
 function renderDrawer(){
   const body = document.getElementById('drawerBody');
   const foot = document.getElementById('drawerFoot');
+
+  let historyHtml = '';
+  if(myOrders.length > 0){
+    historyHtml = `<div class="section-label" style="margin-top:0;border-top:none;padding-top:0;">Your orders</div>` +
+      myOrders.slice().reverse().map(o => `
+        <div class="order-history-item">
+          <div class="ohi-top">
+            <span class="status-badge ${o.status==='confirmed' ? 'status-confirmed' : 'status-pending'}">${o.status==='confirmed' ? '✓ Confirmed' : 'Pending'}</span>
+            <span class="ohi-amount">KSh ${o.amount.toLocaleString()}</span>
+          </div>
+          <div class="ohi-items">${o.itemsSummary}</div>
+        </div>
+      `).join('');
+  }
+
   if(cart.length===0){
-    body.innerHTML = `<div class="empty-cart">Nothing in your order yet.<br>Tap a pair above to get started.</div>`;
+    body.innerHTML = historyHtml + `<div class="empty-cart">Nothing new in your order yet.<br>Tap a pair above to get started.</div>`;
     foot.innerHTML = ''; return;
   }
-  body.innerHTML = `<div class="section-label">Items you've chosen</div>` + cart.map((c,idx)=>{
+  body.innerHTML = historyHtml + `<div class="section-label">Items you've chosen</div>` + cart.map((c,idx)=>{
     const p = PRODUCTS.find(pp=>pp.id===c.id);
     return `<div class="cart-item">
       <div class="thumb-mini">${recolorSvg(p.svg, c.color)}</div>
@@ -496,10 +535,20 @@ async function placeOrder(){
       })
     });
     if(!res.ok) throw new Error('backend rejected the order');
+    const data = await res.json();
 
-    status.textContent = `Order sent to Prime Wear Collections 254 as pending. They'll confirm your payment from ${sender} and reach you on ${phone} to arrange delivery.`;
+    const itemsSummary = items.map(it => `${it.qty}x ${it.name} (${it.size}, ${it.color})`).join(', ');
+    myOrders.push({order_id: data.order_id, amount: total, itemsSummary, status: 'pending', submitted_at: new Date().toISOString()});
+    saveMyOrders();
+    cart = [];
+    saveCart();
+    updateFab();
+    startPolling();
+
+    status.textContent = `Order sent to Prime Wear Collections 254 as pending. They'll confirm your payment from ${sender} and reach you on ${phone} to arrange delivery. You'll see it flip to Confirmed above once they do.`;
     status.classList.add('show');
     btn.textContent = 'Pending seller confirmation…';
+    setTimeout(()=>renderDrawer(), 1200);
   } catch(err){
     status.textContent = "Couldn't reach the order system just now — your payment is still fine, but please also message Prime Wear Collections 254 directly so they know to expect it.";
     status.classList.add('show', 'error');
@@ -508,9 +557,40 @@ async function placeOrder(){
   }
 }
 
+// ---------- Poll the backend so the buyer sees confirmation without refreshing ----------
+async function checkMyOrdersStatus(){
+  const pending = myOrders.filter(o => o.status !== 'confirmed');
+  if(pending.length === 0){
+    if(pollTimer){ clearInterval(pollTimer); pollTimer = null; }
+    return;
+  }
+  let changed = false;
+  for(const o of pending){
+    try{
+      const res = await fetch(`${BACKEND_URL}/api/order-status/${o.order_id}`);
+      if(!res.ok) continue;
+      const data = await res.json();
+      if(data.status === 'confirmed'){
+        o.status = 'confirmed';
+        changed = true;
+        showToast(`Your order (KSh ${o.amount.toLocaleString()}) was confirmed by Prime Wear!`);
+      }
+    } catch(e){ /* network hiccup — try again next interval */ }
+  }
+  if(changed){
+    saveMyOrders();
+    if(drawer.classList.contains('open')) renderDrawer();
+  }
+}
+function startPolling(){
+  if(pollTimer) return;
+  pollTimer = setInterval(checkMyOrdersStatus, 15000);
+}
+
 renderFilters();
 renderGrid();
 updateFab();
+if(myOrders.some(o => o.status !== 'confirmed')) startPolling();
 </script>
 </body>
 </html>
