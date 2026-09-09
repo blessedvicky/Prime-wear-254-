@@ -145,9 +145,6 @@
   .field{margin-bottom:12px;}
   .field label{display:block; font-size:0.78rem; font-weight:600; margin-bottom:5px; color:#5c4f43;}
   .field select, .field input{width:100%; padding:10px; border-radius:6px; border:1px solid rgba(42,27,18,0.25); font-size:0.88rem; background:#fff;}
-  .pay-method-row{display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;}
-  .pay-method-chip{padding:8px 13px; border-radius:8px; font-size:0.8rem; font-weight:600; border:1px solid rgba(42,27,18,0.25);}
-  .pay-method-chip.active{background:var(--espresso); color:var(--cream); border-color:var(--espresso);}
   .pay-details{background:#fff; border:1px solid rgba(42,27,18,0.15); border-radius:10px; padding:14px; margin-bottom:14px;}
   .pay-details .pd-row{display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;}
   .pay-details .pd-label{font-size:0.76rem; color:#7a6c5c; font-weight:600;}
@@ -272,18 +269,14 @@ const AREAS = [
   {id:'nearby', label:'Nearby estate (3–10km)', fee:200},
   {id:'far', label:'Outside town / further out', fee:350},
 ];
-const PAY_METHODS = {
-  till:{label:'Buy Goods (Till)', number:'000000', numLabel:'Till Number', steps:['Go to M-Pesa on your phone','Select Lipa na M-Pesa, then Buy Goods and Services','Enter the till number above','Enter the total amount, then your M-Pesa PIN']},
-  paybill:{label:'Paybill', number:'000000', account:'PRIMEWEAR', numLabel:'Paybill Number', steps:['Go to M-Pesa on your phone','Select Lipa na M-Pesa, then Pay Bill','Enter the paybill number, then the account number above','Enter the total amount, then your M-Pesa PIN']},
-  pochi:{label:'Pochi / Phone Number', number:'07XX XXX XXX', numLabel:'Phone Number', steps:['Go to M-Pesa on your phone','Select Send Money','Enter the phone number above','Enter the total amount, then your M-Pesa PIN']},
-};
+// Prime Wear only takes Paybill — real details, no method picker needed.
+const PAYBILL = {label:'Paybill', number:'247247', account:'182193', numLabel:'Paybill Number', steps:['Go to M-Pesa on your phone','Select Lipa na M-Pesa, then Pay Bill','Enter the paybill number, then the account number above','Enter the total amount, then your M-Pesa PIN']};
 
 let activeFilter = 'all';
 let cart = [];
 let currentModalProduct = null;
 let modalColor = null, modalSize = null, modalQty = 1;
 let selectedArea = AREAS[0].id;
-let selectedPayMethod = 'till';
 let pendingConfirm = null;
 
 function scrollToFilter(cat){
@@ -429,7 +422,7 @@ function renderDrawer(){
   const subtotal = cartTotal();
   const areaFee = AREAS.find(a=>a.id===selectedArea).fee;
   const total = subtotal + areaFee;
-  const pm = PAY_METHODS[selectedPayMethod];
+  const pm = PAYBILL;
 
   foot.innerHTML = `
     <div class="section-label" style="margin-top:0;border-top:none;padding-top:0;">Delivery</div>
@@ -441,14 +434,10 @@ function renderDrawer(){
     <div class="row-between total"><span>Total to pay</span><span>KSh ${total.toLocaleString()}</span></div>
 
     <div class="section-label">How you'll pay</div>
-    <div class="pay-method-row" id="payMethodRow">
-      ${Object.keys(PAY_METHODS).map(k=>`<button class="pay-method-chip ${k===selectedPayMethod?'active':''}" data-method="${k}">${PAY_METHODS[k].label}</button>`).join('')}
-    </div>
     <div class="pay-details">
       <div class="pd-row"><div><div class="pd-label">${pm.numLabel}</div><div class="pd-value">${pm.number}</div></div><button class="copy-btn" id="copyNumBtn">Copy</button></div>
-      ${pm.account ? `<div class="pd-row"><div><div class="pd-label">Account Number</div><div class="pd-value">${pm.account}</div></div><button class="copy-btn" id="copyAccBtn">Copy</button></div>` : ''}
+      <div class="pd-row"><div><div class="pd-label">Account Number</div><div class="pd-value">${pm.account}</div></div><button class="copy-btn" id="copyAccBtn">Copy</button></div>
       <ol class="pay-steps">${pm.steps.map(s=>`<li>${s}</li>`).join('')}</ol>
-      <div style="font-size:0.72rem;color:#8a7d6f;margin-top:8px;">Placeholder number for now — Prime Wear Collections 254 to confirm their real ${pm.numLabel.toLowerCase()}.</div>
     </div>
 
     <div class="field"><label>M-Pesa sender name</label><input type="text" id="senderName" placeholder="Name shown on the M-Pesa message"></div>
@@ -459,10 +448,8 @@ function renderDrawer(){
   `;
 
   document.getElementById('areaSelect').addEventListener('change', (e)=>{ selectedArea = e.target.value; renderDrawer(); });
-  document.querySelectorAll('.pay-method-chip').forEach(el=>el.addEventListener('click', ()=>{ selectedPayMethod = el.dataset.method; renderDrawer(); }));
   document.getElementById('copyNumBtn').addEventListener('click', (e)=>copyText(pm.number, e.target));
-  const accBtn = document.getElementById('copyAccBtn');
-  if(accBtn) accBtn.addEventListener('click', (e)=>copyText(pm.account, e.target));
+  document.getElementById('copyAccBtn').addEventListener('click', (e)=>copyText(pm.account, e.target));
   document.getElementById('placeOrderBtn').addEventListener('click', placeOrder);
 }
 
