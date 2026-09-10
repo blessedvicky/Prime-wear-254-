@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prime Wear — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --espresso:#2A1B12; --espresso-2:#3A2618; --leather:#8B4A2B; --leather-light:#A9683F;
+    --cream:#EDE3D0; --cream-2:#F6F0E4; --rust:#B5451F; --rust-dark:#8F3517; --charcoal:#211B16;
+    --gold:#C89B4A; --green:#3f7a4d; --red:#c0392b; --line:rgba(200,155,74,0.35);
+    --display:'Fraunces', serif; --body:'Inter', sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:var(--body); background:var(--cream-2); color:var(--charcoal); line-height:1.5; -webkit-font-smoothing:antialiased; padding-bottom:60px;}
+  button{font-family:inherit; cursor:pointer; border:none; background:none;}
+  input, select, textarea{font-family:inherit;}
+
+  .topnav{background:var(--espresso); color:var(--cream); padding:16px 20px; border-bottom:1px solid var(--line); position:sticky; top:0; z-index:20;}
+  .topnav-inner{max-width:900px; margin:0 auto; display:flex; justify-content:space-between; align-items:center;}
+  .brand-mark{font-family:var(--display); font-weight:800; font-size:1.1rem;}
+  .brand-sub{font-size:0.72rem; color:var(--gold); font-weight:600;}
+  .logout-btn{color:rgba(237,227,208,0.7); font-size:0.78rem; font-weight:600; text-decoration:underline;}
+
+  .gate{max-width:360px; margin:80px auto; padding:0 20px; text-align:center;}
+  .gate .shoe-icon{width:64px; margin:0 auto 20px;}
+  .gate h1{font-family:var(--display); font-size:1.4rem; margin-bottom:8px;}
+  .gate p{color:#5c4f43; font-size:0.9rem; margin-bottom:22px;}
+  .gate input{width:100%; padding:13px 14px; border-radius:8px; border:1px solid rgba(42,27,18,0.25); font-size:0.95rem; margin-bottom:12px; background:#fff;}
+  .gate button{width:100%; background:var(--rust); color:#fff; padding:13px; border-radius:8px; font-weight:700; font-size:0.95rem;}
+  .gate .err{color:var(--red); font-size:0.82rem; margin-top:10px; display:none;}
+  .gate .err.show{display:block;}
+
+  .wrap{max-width:900px; margin:0 auto; padding:28px 18px;}
+  .panel{background:#fff; border-radius:14px; padding:22px 20px; box-shadow:0 8px 24px rgba(42,27,18,0.08); margin-bottom:26px; border:1px solid rgba(42,27,18,0.06);}
+  .panel h2{font-family:var(--display); font-size:1.2rem; margin-bottom:4px;}
+  .panel .sub{font-size:0.82rem; color:#8a7d6f; margin-bottom:18px;}
+
+  .field{margin-bottom:16px;}
+  .field label{display:block; font-size:0.8rem; font-weight:700; margin-bottom:6px; color:var(--espresso);}
+  .field .hint{font-size:0.74rem; color:#a3927a; margin-top:4px;}
+  .field input[type=text], .field input[type=number], .field select, .field textarea{
+    width:100%; padding:11px 12px; border-radius:8px; border:1px solid rgba(42,27,18,0.22); font-size:0.9rem; background:var(--cream-2);
+    transition:border-color .15s, background .15s;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{outline:none; border-color:var(--rust); background:#fff;}
+  .field textarea{resize:vertical; min-height:64px;}
+  .two-col{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  @media (max-width:520px){ .two-col{grid-template-columns:1fr;} }
+
+  .chip-row{display:flex; flex-wrap:wrap; gap:8px; margin-top:2px;}
+  .chip-toggle{padding:7px 14px; border-radius:999px; font-size:0.82rem; font-weight:600; border:1px solid rgba(42,27,18,0.25); background:#fff; transition:all .15s;}
+  .chip-toggle.active{background:var(--espresso); color:var(--cream); border-color:var(--espresso); transform:scale(1.04);}
+  .chip-add-row{display:flex; gap:8px; margin-top:8px;}
+  .chip-add-row input{flex:1;}
+  .chip-add-row button{background:var(--gold); color:var(--espresso); font-weight:700; padding:0 16px; border-radius:8px; font-size:0.85rem;}
+  .color-chip{padding:6px 12px 6px 10px; border-radius:999px; font-size:0.8rem; font-weight:600; background:var(--cream); border:1px solid rgba(42,27,18,0.2); display:inline-flex; align-items:center; gap:6px;}
+  .color-chip .rm{color:var(--rust-dark); font-weight:800; cursor:pointer;}
+
+  .stock-toggle{display:flex; align-items:center; gap:10px;}
+  .switch{position:relative; width:46px; height:26px; border-radius:999px; background:#d8cbb8; transition:background .2s; flex-shrink:0; cursor:pointer;}
+  .switch.on{background:var(--green);}
+  .switch .knob{position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:50%; background:#fff; transition:left .2s; box-shadow:0 1px 3px rgba(0,0,0,0.3);}
+  .switch.on .knob{left:23px;}
+
+  .submit-btn{width:100%; background:var(--rust); color:#fff; padding:14px; border-radius:9px; font-weight:700; font-size:0.95rem; margin-top:6px; box-shadow:0 10px 20px rgba(181,69,31,0.3); transition:transform .1s;}
+  .submit-btn:active{transform:scale(0.98);}
+  .submit-btn:disabled{background:#c9b7a6; box-shadow:none;}
+  .cancel-edit{width:100%; margin-top:8px; padding:11px; border-radius:9px; font-weight:600; font-size:0.85rem; color:#8a7d6f; background:var(--cream-2);}
+
+  .products-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;}
+  .filter-mini{display:flex; gap:6px; flex-wrap:wrap;}
+  .filter-mini button{padding:6px 12px; border-radius:999px; font-size:0.76rem; font-weight:600; border:1px solid rgba(42,27,18,0.2); background:#fff;}
+  .filter-mini button.active{background:var(--espresso); color:var(--cream); border-color:var(--espresso);}
+
+  .product-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:14px;}
+  .product-card{border:1px solid rgba(42,27,18,0.1); border-radius:10px; padding:14px; background:var(--cream-2); position:relative; transition:box-shadow .15s;}
+  .product-card:hover{box-shadow:0 6px 16px rgba(42,27,18,0.12);}
+  .product-card.out{opacity:0.6;}
+  .pc-top{margin-bottom:6px;}
+  .pc-name{font-family:var(--display); font-size:1rem; font-weight:700;}
+  .pc-cat{font-size:0.68rem; font-weight:700; color:var(--rust-dark); text-transform:uppercase; letter-spacing:0.03em;}
+  .pc-price{font-weight:800; color:var(--rust-dark); font-size:0.98rem; margin:4px 0;}
+  .pc-meta{font-size:0.76rem; color:#8a7d6f; margin-bottom:10px;}
+  .pc-actions{display:flex; gap:8px;}
+  .pc-actions button{flex:1; padding:8px; border-radius:7px; font-size:0.78rem; font-weight:700;}
+  .pc-edit{background:var(--espresso); color:var(--cream);}
+  .pc-delete{background:#fdeaea; color:var(--red);}
+  .pc-stock-tag{position:absolute; top:10px; right:10px; font-size:0.65rem; font-weight:700; padding:3px 9px; border-radius:999px;}
+  .pc-stock-tag.in{background:#e9f5ec; color:var(--green);}
+  .pc-stock-tag.out{background:#fdeaea; color:var(--red);}
+
+  .empty-state{text-align:center; padding:40px 20px; color:#a3927a; font-size:0.88rem;}
+
+  .toast{position:fixed; left:50%; bottom:24px; transform:translateX(-50%) translateY(20px); z-index:120; background:var(--charcoal); color:#fff; padding:12px 22px; border-radius:999px; font-size:0.85rem; font-weight:600; opacity:0; pointer-events:none; transition:opacity .2s, transform .2s; box-shadow:0 8px 20px rgba(0,0,0,0.25); max-width:90vw; text-align:center;}
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+  .toast.error{background:var(--red);}
+</style>
+</head>
+<body>
+
+<div id="gateScreen" class="gate">
+  <svg class="shoe-icon" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg"><path d="M10 90 C10 70 25 55 55 52 C80 50 90 35 120 38 C150 41 165 55 178 58 C190 61 195 72 190 85 C185 98 165 100 130 98 L25 98 C15 98 10 96 10 90 Z" fill="#8B4A2B" stroke="#2A1B12" stroke-width="3"/><path d="M10 90 L190 90" stroke="#B5451F" stroke-width="6"/></svg>
+  <h1>Prime Wear Admin</h1>
+  <p>Enter the admin password to manage products.</p>
+  <input type="password" id="secretInput" placeholder="Admin password">
+  <button id="unlockBtn">Unlock</button>
+  <div class="err" id="gateErr">That password wasn't accepted — check it and try again.</div>
+</div>
+
+<div id="app" style="display:none;">
+  <nav class="topnav">
+    <div class="topnav-inner">
+      <div>
+        <div class="brand-mark">Prime Wear Admin</div>
+        <div class="brand-sub">Manage what's on the shelves</div>
+      </div>
+      <button class="logout-btn" id="logoutBtn">Log out</button>
+    </div>
+  </nav>
+
+  <div class="wrap">
+    <div class="panel">
+      <h2 id="formTitle">Add a new shoe</h2>
+      <div class="sub" id="formSub">Fill this in and it goes live on the shop immediately.</div>
+
+      <div class="field">
+        <label>Name</label>
+        <input type="text" id="fName" placeholder="e.g. Street Runner Sneaker">
+      </div>
+
+      <div class="two-col">
+        <div class="field">
+          <label>Category</label>
+          <select id="fCategory"><option value="">Loading…</option></select>
+        </div>
+        <div class="field">
+          <label>Price (KSh)</label>
+          <input type="number" id="fPrice" placeholder="2800">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Sizes available</label>
+        <div class="chip-row" id="sizeChips"></div>
+      </div>
+
+      <div class="field">
+        <label>Colors available</label>
+        <div class="chip-row" id="colorChips"></div>
+        <div class="chip-add-row">
+          <input type="text" id="colorInput" placeholder="Type a color, e.g. Black">
+          <button id="addColorBtn">Add</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Description</label>
+        <textarea id="fDesc" placeholder="A short line about this shoe — comfort, use case, who it's for."></textarea>
+      </div>
+
+      <div class="field">
+        <label>Photo</label>
+        <div id="photoPreviewWrap" style="display:none; margin-bottom:10px;">
+          <img id="photoPreview" style="width:100px; height:100px; object-fit:cover; border-radius:8px; border:1px solid rgba(42,27,18,0.2);">
+        </div>
+        <input type="file" id="fPhotoFile" accept="image/jpeg,image/png,image/webp">
+        <div class="hint" id="photoHint">Tap to choose a photo — it uploads automatically. JPG, PNG, or WEBP.</div>
+      </div>
+
+      <div class="field">
+        <label>In stock</label>
+        <div class="stock-toggle">
+          <div class="switch on" id="stockSwitch"><div class="knob"></div></div>
+          <span id="stockLabel">Yes, available to order</span>
+        </div>
+      </div>
+
+      <button class="submit-btn" id="submitBtn">Add to the shop</button>
+      <button class="cancel-edit" id="cancelEditBtn" style="display:none;">Cancel editing</button>
+    </div>
+
+    <div class="panel">
+      <div class="products-head">
+        <h2 style="margin:0;">Your shoes</h2>
+        <div class="filter-mini" id="filterMini"></div>
+      </div>
+      <div id="productGrid" class="product-grid"></div>
+      <div id="emptyState" class="empty-state" style="display:none;"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const BACKEND_URL = 'https://collective-254.onrender.com';
+const SELLER_ID = 'prime-wear';
+const SIZE_RANGE = Array.from({length: 22}, (_, i) => 24 + i); // 24–45, covers kids through adult
+
+let adminSecret = sessionStorage.getItem('primewear_admin_secret') || '';
+let categories = [];
+let products = [];
+let selectedSizes = [];
+let selectedColors = [];
+let editingId = null;
+let activeFilter = 'all';
+let stockOn = true;
+
+function showToast(msg, isError){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.toggle('error', !!isError);
+  t.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(()=>t.classList.remove('show'), 2600);
+}
+
+function tryEnter(){
+  const val = document.getElementById('secretInput').value.trim();
+  if(!val) return;
+  adminSecret = val;
+  sessionStorage.setItem('primewear_admin_secret', val);
+  document.getElementById('gateErr').classList.remove('show');
+  enterApp();
+}
+document.getElementById('unlockBtn').addEventListener('click', tryEnter);
+document.getElementById('secretInput').addEventListener('keydown', e => { if(e.key === 'Enter') tryEnter(); });
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  sessionStorage.removeItem('primewear_admin_secret');
+  adminSecret = '';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('gateScreen').style.display = 'block';
+  document.getElementById('secretInput').value = '';
+});
+
+async function enterApp(){
+  document.getElementById('gateScreen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  await loadCategories();
+  renderSizeChips();
+  renderColorChips();
+  await loadProducts();
+}
+
+async function loadCategories(){
+  try{
+    const res = await fetch(`${BACKEND_URL}/api/categories/${SELLER_ID}`);
+    categories = await res.json();
+    const sel = document.getElementById('fCategory');
+    sel.innerHTML = categories.map(c => `<option value="${c.id}">${c.label}</option>`).join('');
+    renderFilterMini();
+  } catch(e){
+    showToast("Couldn't load categories — check your connection", true);
+  }
+}
+async function loadProducts(){
+  try{
+    const res = await fetch(`${BACKEND_URL}/api/products/${SELLER_ID}`);
+    products = await res.json();
+    renderProductGrid();
+  } catch(e){
+    showToast("Couldn't load products — check your connection", true);
+  }
+}
+
+function renderFilterMini(){
+  const el = document.getElementById('filterMini');
+  el.innerHTML = [`<button data-cat="all" class="${activeFilter==='all'?'active':''}">All</button>`]
+    .concat(categories.map(c => `<button data-cat="${c.id}" class="${activeFilter===c.id?'active':''}">${c.label}</button>`))
+    .join('');
+  el.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { activeFilter = b.dataset.cat; renderFilterMini(); renderProductGrid(); }));
+}
+
+function renderProductGrid(){
+  const grid = document.getElementById('productGrid');
+  const empty = document.getElementById('emptyState');
+  const shown = products.filter(p => activeFilter==='all' || p.category===activeFilter);
+  if(shown.length === 0){
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+    empty.textContent = products.length===0 ? 'No shoes added yet — use the form above to add your first one.' : 'Nothing in this category yet.';
+    return;
+  }
+  empty.style.display = 'none';
+  grid.innerHTML = shown.map(p => {
+    const catLabel = (categories.find(c => c.id===p.category) || {}).label || p.category;
+    return `
+    <div class="product-card ${p.in_stock ? '' : 'out'}">
+      <span class="pc-stock-tag ${p.in_stock ? 'in' : 'out'}">${p.in_stock ? 'In stock' : 'Out of stock'}</span>
+      <div class="pc-top"><div class="pc-cat">${catLabel}</div><div class="pc-name">${p.name}</div></div>
+      <div class="pc-price">KSh ${Number(p.price).toLocaleString()}</div>
+      <div class="pc-meta">Sizes: ${p.sizes.join(', ') || '—'}<br>Colors: ${p.colors.join(', ') || '—'}</div>
+      <div class="pc-actions">
+        <button class="pc-edit" onclick="startEdit('${p.id}')">Edit</button>
+        <button class="pc-delete" onclick="deleteProduct('${p.id}')">Delete</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderSizeChips(){
+  const el = document.getElementById('sizeChips');
+  el.innerHTML = SIZE_RANGE.map(s => `<button type="button" class="chip-toggle ${selectedSizes.includes(String(s))?'active':''}" data-size="${s}">${s}</button>`).join('');
+  el.querySelectorAll('.chip-toggle').forEach(chip => chip.addEventListener('click', () => {
+    const s = chip.dataset.size;
+    if(selectedSizes.includes(s)) selectedSizes = selectedSizes.filter(x=>x!==s);
+    else selectedSizes.push(s);
+    renderSizeChips();
+  }));
+}
+
+function renderColorChips(){
+  const el = document.getElementById('colorChips');
+  if(selectedColors.length === 0){ el.innerHTML = '<span style="font-size:0.8rem;color:#a3927a;">No colors added yet</span>'; return; }
+  el.innerHTML = selectedColors.map((c,i) => `<span class="color-chip">${c}<span class="rm" onclick="removeColor(${i})">✕</span></span>`).join('');
+}
+function removeColor(i){ selectedColors.splice(i,1); renderColorChips(); }
+document.getElementById('addColorBtn').addEventListener('click', addColorFromInput);
+document.getElementById('colorInput').addEventListener('keydown', e => { if(e.key==='Enter'){ e.preventDefault(); addColorFromInput(); } });
+function addColorFromInput(){
+  const input = document.getElementById('colorInput');
+  const val = input.value.trim();
+  if(val && !selectedColors.includes(val)){ selectedColors.push(val); renderColorChips(); }
+  input.value = '';
+}
+
+// ---------- Photo upload ----------
+let currentPhotoUrl = '';
+document.getElementById('fPhotoFile').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  const hint = document.getElementById('photoHint');
+  hint.textContent = 'Uploading…';
+
+  const formData = new FormData();
+  formData.append('photo', file);
+
+  try{
+    const res = await fetch(`${BACKEND_URL}/api/upload-photo/${SELLER_ID}?secret=${encodeURIComponent(adminSecret)}`, {
+      method: 'POST', body: formData
+    });
+    if(res.status === 401){
+      showToast('Your password was rejected — logging you out', true);
+      sessionStorage.removeItem('primewear_admin_secret');
+      setTimeout(() => location.reload(), 1200);
+      return;
+    }
+    if(!res.ok){
+      const err = await res.json().catch(()=>({}));
+      hint.textContent = err.error || 'Upload failed — try again.';
+      showToast(err.error || 'Photo upload failed', true);
+      return;
+    }
+    const data = await res.json();
+    currentPhotoUrl = data.photo_url;
+    document.getElementById('photoPreview').src = currentPhotoUrl;
+    document.getElementById('photoPreviewWrap').style.display = 'block';
+    hint.textContent = 'Uploaded — tap again to replace it.';
+    showToast('Photo uploaded');
+  } catch(e){
+    hint.textContent = "Couldn't reach the server — try again.";
+    showToast("Couldn't reach the server", true);
+  }
+});
+
+const stockSwitch = document.getElementById('stockSwitch');
+stockSwitch.addEventListener('click', () => {
+  stockOn = !stockOn;
+  stockSwitch.classList.toggle('on', stockOn);
+  document.getElementById('stockLabel').textContent = stockOn ? 'Yes, available to order' : 'No, currently out of stock';
+});
+
+function resetForm(){
+  editingId = null;
+  document.getElementById('formTitle').textContent = 'Add a new shoe';
+  document.getElementById('formSub').textContent = "Fill this in and it goes live on the shop immediately.";
+  document.getElementById('submitBtn').textContent = 'Add to the shop';
+  document.getElementById('cancelEditBtn').style.display = 'none';
+  document.getElementById('fName').value = '';
+  document.getElementById('fCategory').selectedIndex = 0;
+  document.getElementById('fPrice').value = '';
+  document.getElementById('fDesc').value = '';
+  document.getElementById('fPhotoFile').value = '';
+  currentPhotoUrl = '';
+  document.getElementById('photoPreviewWrap').style.display = 'none';
+  document.getElementById('photoHint').textContent = 'Tap to choose a photo — it uploads automatically. JPG, PNG, or WEBP.';
+  selectedSizes = []; renderSizeChips();
+  selectedColors = []; renderColorChips();
+  stockOn = true; stockSwitch.classList.add('on'); document.getElementById('stockLabel').textContent = 'Yes, available to order';
+}
+
+function startEdit(id){
+  const p = products.find(x => x.id === id);
+  if(!p) return;
+  editingId = id;
+  document.getElementById('formTitle').textContent = `Editing: ${p.name}`;
+  document.getElementById('formSub').textContent = 'Update the details and save.';
+  document.getElementById('submitBtn').textContent = 'Save changes';
+  document.getElementById('cancelEditBtn').style.display = 'block';
+  document.getElementById('fName').value = p.name;
+  document.getElementById('fCategory').value = p.category;
+  document.getElementById('fPrice').value = p.price;
+  document.getElementById('fDesc').value = p.description || '';
+  currentPhotoUrl = p.photo_url || '';
+  if(currentPhotoUrl){
+    document.getElementById('photoPreview').src = currentPhotoUrl;
+    document.getElementById('photoPreviewWrap').style.display = 'block';
+    document.getElementById('photoHint').textContent = 'Current photo shown above — choose a new file to replace it.';
+  } else {
+    document.getElementById('photoPreviewWrap').style.display = 'none';
+    document.getElementById('photoHint').textContent = 'Tap to choose a photo — it uploads automatically. JPG, PNG, or WEBP.';
+  }
+  selectedSizes = [...p.sizes]; renderSizeChips();
+  selectedColors = [...p.colors]; renderColorChips();
+  stockOn = !!p.in_stock; stockSwitch.classList.toggle('on', stockOn);
+  document.getElementById('stockLabel').textContent = stockOn ? 'Yes, available to order' : 'No, currently out of stock';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+document.getElementById('cancelEditBtn').addEventListener('click', resetForm);
+
+document.getElementById('submitBtn').addEventListener('click', async () => {
+  const name = document.getElementById('fName').value.trim();
+  const category = document.getElementById('fCategory').value;
+  const price = Number(document.getElementById('fPrice').value);
+  const description = document.getElementById('fDesc').value.trim();
+  const photo_url = currentPhotoUrl;
+
+  if(!name || !category || !price){
+    showToast('Name, category and price are required', true);
+    return;
+  }
+
+  const payload = { name, category, price, sizes: selectedSizes, colors: selectedColors, description, photo_url, in_stock: stockOn };
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+
+  try{
+    let res;
+    if(editingId){
+      res = await fetch(`${BACKEND_URL}/api/products/${SELLER_ID}/${editingId}?secret=${encodeURIComponent(adminSecret)}`, {
+        method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload)
+      });
+    } else {
+      res = await fetch(`${BACKEND_URL}/api/products/${SELLER_ID}?secret=${encodeURIComponent(adminSecret)}`, {
+        method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload)
+      });
+    }
+    if(res.status === 401){
+      showToast('Your password was rejected — logging you out', true);
+      sessionStorage.removeItem('primewear_admin_secret');
+      setTimeout(() => location.reload(), 1200);
+      return;
+    }
+    if(!res.ok){
+      const err = await res.json().catch(()=>({}));
+      showToast(err.error || 'Something went wrong saving that', true);
+      return;
+    }
+    showToast(editingId ? 'Saved changes' : 'Added to the shop');
+    resetForm();
+    await loadProducts();
+  } catch(e){
+    showToast("Couldn't reach the server — check your connection", true);
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+async function deleteProduct(id){
+  const p = products.find(x => x.id === id);
+  if(!confirm(`Delete "${p ? p.name : 'this item'}"? This can't be undone.`)) return;
+  try{
+    const res = await fetch(`${BACKEND_URL}/api/products/${SELLER_ID}/${id}?secret=${encodeURIComponent(adminSecret)}`, { method: 'DELETE' });
+    if(res.status === 401){
+      showToast('Your password was rejected — logging you out', true);
+      sessionStorage.removeItem('primewear_admin_secret');
+      setTimeout(() => location.reload(), 1200);
+      return;
+    }
+    if(!res.ok){ showToast('Could not delete that item', true); return; }
+    showToast('Deleted');
+    await loadProducts();
+  } catch(e){
+    showToast("Couldn't reach the server — check your connection", true);
+  }
+}
+
+if(adminSecret){ enterApp(); }
+</script>
+</body>
+</html>
