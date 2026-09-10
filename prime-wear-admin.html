@@ -209,6 +209,55 @@ let editingId = null;
 let activeFilter = 'all';
 let stockOn = true;
 
+const DRAFT_KEY = 'primewear_admin_draft';
+function saveDraft(){
+  const draft = {
+    editingId,
+    name: document.getElementById('fName').value,
+    category: document.getElementById('fCategory').value,
+    price: document.getElementById('fPrice').value,
+    description: document.getElementById('fDesc').value,
+    sizes: selectedSizes,
+    colors: selectedColors,
+    stockOn,
+    photoUrl: currentPhotoUrl
+  };
+  try{ localStorage.setItem(DRAFT_KEY, JSON.stringify(draft)); } catch(e){ /* storage unavailable, draft just won't survive a reload */ }
+}
+function clearDraft(){
+  localStorage.removeItem(DRAFT_KEY);
+}
+function loadDraft(){
+  let draft;
+  try{ draft = JSON.parse(localStorage.getItem(DRAFT_KEY)); } catch(e){ return; }
+  if(!draft) return;
+
+  editingId = draft.editingId || null;
+  document.getElementById('fName').value = draft.name || '';
+  if(draft.category) document.getElementById('fCategory').value = draft.category;
+  document.getElementById('fPrice').value = draft.price || '';
+  document.getElementById('fDesc').value = draft.description || '';
+  selectedSizes = draft.sizes || []; renderSizeChips();
+  selectedColors = draft.colors || []; renderColorChips();
+  stockOn = draft.stockOn !== undefined ? draft.stockOn : true;
+  stockSwitch.classList.toggle('on', stockOn);
+  document.getElementById('stockLabel').textContent = stockOn ? 'Yes, available to order' : 'No, currently out of stock';
+  if(draft.photoUrl){
+    currentPhotoUrl = draft.photoUrl;
+    document.getElementById('photoPreview').src = currentPhotoUrl;
+    document.getElementById('photoPreviewWrap').style.display = 'block';
+    document.getElementById('photoHint').textContent = editingId ? 'Current photo shown above — choose a new file to replace it.' : 'Uploaded — tap again to replace it.';
+  }
+  if(editingId){
+    document.getElementById('formTitle').textContent = 'Editing (restored draft)';
+    document.getElementById('formSub').textContent = 'Your unsaved changes were kept — update the details and save.';
+    document.getElementById('submitBtn').textContent = 'Save changes';
+    document.getElementById('cancelEditBtn').style.display = 'block';
+  } else if(draft.name || draft.price || draft.sizes?.length || draft.colors?.length || draft.photoUrl){
+    document.getElementById('formSub').textContent = 'Your unsaved draft was restored.';
+  }
+}
+
 function showToast(msg, isError){
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -262,6 +311,7 @@ async function enterApp(){
   renderSizeChips();
   renderColorChips();
   await loadProducts();
+  loadDraft();
 }
 
 async function loadCategories(){
@@ -328,6 +378,7 @@ function renderSizeChips(){
     if(selectedSizes.includes(s)) selectedSizes = selectedSizes.filter(x=>x!==s);
     else selectedSizes.push(s);
     renderSizeChips();
+    saveDraft();
   }));
 }
 
@@ -336,15 +387,20 @@ function renderColorChips(){
   if(selectedColors.length === 0){ el.innerHTML = '<span style="font-size:0.8rem;color:#a3927a;">No colors added yet</span>'; return; }
   el.innerHTML = selectedColors.map((c,i) => `<span class="color-chip">${c}<span class="rm" onclick="removeColor(${i})">✕</span></span>`).join('');
 }
-function removeColor(i){ selectedColors.splice(i,1); renderColorChips(); }
+function removeColor(i){ selectedColors.splice(i,1); renderColorChips(); saveDraft(); }
 document.getElementById('addColorBtn').addEventListener('click', addColorFromInput);
 document.getElementById('colorInput').addEventListener('keydown', e => { if(e.key==='Enter'){ e.preventDefault(); addColorFromInput(); } });
 function addColorFromInput(){
   const input = document.getElementById('colorInput');
   const val = input.value.trim();
-  if(val && !selectedColors.includes(val)){ selectedColors.push(val); renderColorChips(); }
+  if(val && !selectedColors.includes(val)){ selectedColors.push(val); renderColorChips(); saveDraft(); }
   input.value = '';
 }
+
+['fName','fCategory','fPrice','fDesc'].forEach(id => {
+  document.getElementById(id).addEventListener('input', saveDraft);
+  document.getElementById(id).addEventListener('change', saveDraft);
+});
 
 // ---------- Photo upload ----------
 let currentPhotoUrl = '';
@@ -379,6 +435,7 @@ document.getElementById('fPhotoFile').addEventListener('change', async (e) => {
     document.getElementById('photoPreviewWrap').style.display = 'block';
     hint.textContent = 'Uploaded — tap again to replace it.';
     showToast('Photo uploaded');
+    saveDraft();
   } catch(e){
     hint.textContent = "Couldn't reach the server — try again.";
     showToast("Couldn't reach the server", true);
@@ -390,6 +447,7 @@ stockSwitch.addEventListener('click', () => {
   stockOn = !stockOn;
   stockSwitch.classList.toggle('on', stockOn);
   document.getElementById('stockLabel').textContent = stockOn ? 'Yes, available to order' : 'No, currently out of stock';
+  saveDraft();
 });
 
 function resetForm(){
@@ -409,6 +467,7 @@ function resetForm(){
   selectedSizes = []; renderSizeChips();
   selectedColors = []; renderColorChips();
   stockOn = true; stockSwitch.classList.add('on'); document.getElementById('stockLabel').textContent = 'Yes, available to order';
+  clearDraft();
 }
 
 function startEdit(id){
@@ -437,6 +496,7 @@ function startEdit(id){
   stockOn = !!p.in_stock; stockSwitch.classList.toggle('on', stockOn);
   document.getElementById('stockLabel').textContent = stockOn ? 'Yes, available to order' : 'No, currently out of stock';
   window.scrollTo({top:0, behavior:'smooth'});
+  saveDraft();
 }
 document.getElementById('cancelEditBtn').addEventListener('click', resetForm);
 
