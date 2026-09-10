@@ -200,7 +200,7 @@ const BACKEND_URL = 'https://collective-254.onrender.com';
 const SELLER_ID = 'prime-wear';
 const SIZE_RANGE = Array.from({length: 22}, (_, i) => 24 + i); // 24–45, covers kids through adult
 
-let adminSecret = sessionStorage.getItem('primewear_admin_secret') || '';
+let adminSecret = localStorage.getItem('primewear_admin_secret') || '';
 let categories = [];
 let products = [];
 let selectedSizes = [];
@@ -218,18 +218,37 @@ function showToast(msg, isError){
   showToast._t = setTimeout(()=>t.classList.remove('show'), 2600);
 }
 
-function tryEnter(){
+async function tryEnter(){
   const val = document.getElementById('secretInput').value.trim();
   if(!val) return;
-  adminSecret = val;
-  sessionStorage.setItem('primewear_admin_secret', val);
+  const btn = document.getElementById('unlockBtn');
+  btn.disabled = true;
+  btn.textContent = 'Checking…';
   document.getElementById('gateErr').classList.remove('show');
-  enterApp();
+
+  try{
+    const res = await fetch(`${BACKEND_URL}/api/verify-admin?secret=${encodeURIComponent(val)}`);
+    if(!res.ok){
+      document.getElementById('gateErr').textContent = "That password wasn't accepted — check it and try again.";
+      document.getElementById('gateErr').classList.add('show');
+      btn.disabled = false;
+      btn.textContent = 'Unlock';
+      return;
+    }
+    adminSecret = val;
+    localStorage.setItem('primewear_admin_secret', val);
+    enterApp();
+  } catch(e){
+    document.getElementById('gateErr').textContent = "Couldn't reach the server — check your connection and try again.";
+    document.getElementById('gateErr').classList.add('show');
+    btn.disabled = false;
+    btn.textContent = 'Unlock';
+  }
 }
 document.getElementById('unlockBtn').addEventListener('click', tryEnter);
 document.getElementById('secretInput').addEventListener('keydown', e => { if(e.key === 'Enter') tryEnter(); });
 document.getElementById('logoutBtn').addEventListener('click', () => {
-  sessionStorage.removeItem('primewear_admin_secret');
+  localStorage.removeItem('primewear_admin_secret');
   adminSecret = '';
   document.getElementById('app').style.display = 'none';
   document.getElementById('gateScreen').style.display = 'block';
@@ -344,7 +363,7 @@ document.getElementById('fPhotoFile').addEventListener('change', async (e) => {
     });
     if(res.status === 401){
       showToast('Your password was rejected — logging you out', true);
-      sessionStorage.removeItem('primewear_admin_secret');
+      localStorage.removeItem('primewear_admin_secret');
       setTimeout(() => location.reload(), 1200);
       return;
     }
@@ -450,7 +469,7 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
     }
     if(res.status === 401){
       showToast('Your password was rejected — logging you out', true);
-      sessionStorage.removeItem('primewear_admin_secret');
+      localStorage.removeItem('primewear_admin_secret');
       setTimeout(() => location.reload(), 1200);
       return;
     }
@@ -476,7 +495,7 @@ async function deleteProduct(id){
     const res = await fetch(`${BACKEND_URL}/api/products/${SELLER_ID}/${id}?secret=${encodeURIComponent(adminSecret)}`, { method: 'DELETE' });
     if(res.status === 401){
       showToast('Your password was rejected — logging you out', true);
-      sessionStorage.removeItem('primewear_admin_secret');
+      localStorage.removeItem('primewear_admin_secret');
       setTimeout(() => location.reload(), 1200);
       return;
     }
@@ -488,7 +507,19 @@ async function deleteProduct(id){
   }
 }
 
-if(adminSecret){ enterApp(); }
+async function bootCheck(){
+  if(!adminSecret) return;
+  try{
+    const res = await fetch(`${BACKEND_URL}/api/verify-admin?secret=${encodeURIComponent(adminSecret)}`);
+    if(res.ok){ enterApp(); }
+    else { localStorage.removeItem('primewear_admin_secret'); adminSecret = ''; }
+  } catch(e){
+    // Network hiccup on boot — let them in with the stored key rather than lock them out;
+    // any real write attempt will still be checked properly by the backend either way.
+    enterApp();
+  }
+}
+bootCheck();
 </script>
 </body>
 </html>
