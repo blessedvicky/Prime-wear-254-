@@ -262,8 +262,12 @@ function catLabelFor(catId){
   const c = CATS.find(x=>x.id===catId);
   return c ? c.label : catId;
 }
-function productImageHTML(p, colorForFallback){
-  if(p.photo_url) return `<img src="${p.photo_url}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;">`;
+function productImageHTML(p, colorForFallback, photoIndex){
+  const photos = p.photos || [];
+  if(photos.length){
+    const idx = (typeof photoIndex === 'number' && photos[photoIndex]) ? photoIndex : 0;
+    return `<img src="${photos[idx]}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;">`;
+  }
   const svg = CATEGORY_SVG[p.cat] || sneakerSvg;
   return recolorSvg(svg, colorForFallback);
 }
@@ -284,7 +288,7 @@ async function loadShopData(){
     PRODUCTS = prods.map(p => ({
       id: p.id, name: p.name, cat: p.category, price: p.price,
       sizes: p.sizes, colors: p.colors.length ? p.colors : ['—'],
-      desc: p.description || '', photo_url: p.photo_url || '', stock: !!p.in_stock,
+      desc: p.description || '', photos: p.photos || [], stock: !!p.in_stock,
     }));
 
     renderFilters();
@@ -372,9 +376,11 @@ function showToast(msg){
   showToast._t = setTimeout(()=>t.classList.remove('show'), 2400);
 }
 
+let modalPhotoIndex = 0;
+
 function openProductModal(id){
   const p = PRODUCTS.find(pp=>pp.id===id);
-  currentModalProduct = p; modalColor = p.colors[0]; modalSize = p.sizes[0]; modalQty = 1;
+  currentModalProduct = p; modalColor = p.colors[0]; modalSize = p.sizes[0]; modalQty = 1; modalPhotoIndex = 0;
   renderProductModal();
   document.getElementById('productModalOverlay').classList.add('open');
 }
@@ -382,9 +388,14 @@ function closeProductModal(){ document.getElementById('productModalOverlay').cla
 function renderProductModal(){
   const p = currentModalProduct;
   const box = document.getElementById('productModal');
+  const photos = p.photos || [];
   box.innerHTML = `
     <button class="modal-close" onclick="closeProductModal()">✕</button>
-    <div class="modal-thumb">${productImageHTML(p, modalColor)}</div>
+    <div class="modal-thumb">${productImageHTML(p, modalColor, modalPhotoIndex)}</div>
+    ${photos.length > 1 ? `
+    <div style="display:flex; gap:8px; padding:10px 22px; overflow-x:auto;">
+      ${photos.map((url,i)=>`<img src="${url}" onclick="modalPhotoIndex=${i};renderProductModal();" style="width:52px;height:52px;object-fit:cover;border-radius:6px;cursor:pointer;flex-shrink:0;border:2px solid ${i===modalPhotoIndex?'var(--rust)':'transparent'};opacity:${i===modalPhotoIndex?'1':'0.7'};">`).join('')}
+    </div>` : ''}
     <div class="modal-body">
       <div class="modal-cat">${catLabelFor(p.cat)}</div>
       <h2>${p.name}</h2>
@@ -392,7 +403,7 @@ function renderProductModal(){
       <div class="modal-desc">${p.desc}</div>
       ${!p.stock ? `<div class="modal-out">Currently out of stock — expected back in about 5 days. You can still browse, but ordering is off for now.</div>` : `
       <div class="modal-section">
-        <label>Colour${p.photo_url ? '' : ' — picture updates to match'}</label>
+        <label>Colour${photos.length ? '' : ' — picture updates to match'}</label>
         <div class="swatch-row" id="colorRow">
           ${p.colors.map(c=>`<button class="swatch-chip ${c===modalColor?'active':''}" data-color="${c}"><span class="dot" style="background:${COLOR_HEX[c]||'#ccc'}"></span>${c}</button>`).join('')}
         </div>
