@@ -58,6 +58,10 @@
   .chip-add-row button{background:var(--gold); color:var(--espresso); font-weight:700; padding:0 16px; border-radius:8px; font-size:0.85rem;}
   .color-chip{padding:6px 12px 6px 10px; border-radius:999px; font-size:0.8rem; font-weight:600; background:var(--cream); border:1px solid rgba(42,27,18,0.2); display:inline-flex; align-items:center; gap:6px;}
   .color-chip .rm{color:var(--rust-dark); font-weight:800; cursor:pointer;}
+  .photo-thumb{position:relative; width:64px; height:64px; border-radius:8px; overflow:hidden; border:1px solid rgba(42,27,18,0.2);}
+  .photo-thumb img{width:100%; height:100%; object-fit:cover;}
+  .photo-thumb .rm{position:absolute; top:2px; right:2px; background:rgba(33,27,22,0.75); color:#fff; width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:800; cursor:pointer;}
+  .photo-thumb .cover-tag{position:absolute; bottom:0; left:0; right:0; background:rgba(33,27,22,0.75); color:#fff; font-size:0.6rem; text-align:center; padding:1px 0;}
 
   .stock-toggle{display:flex; align-items:center; gap:10px;}
   .switch{position:relative; width:46px; height:26px; border-radius:999px; background:#d8cbb8; transition:background .2s; flex-shrink:0; cursor:pointer;}
@@ -162,12 +166,10 @@
       </div>
 
       <div class="field">
-        <label>Photo</label>
-        <div id="photoPreviewWrap" style="display:none; margin-bottom:10px;">
-          <img id="photoPreview" style="width:100px; height:100px; object-fit:cover; border-radius:8px; border:1px solid rgba(42,27,18,0.2);">
-        </div>
+        <label>Photos — different angles of this shoe</label>
+        <div class="chip-row" id="photoGallery" style="margin-bottom:10px;"></div>
         <input type="file" id="fPhotoFile" accept="image/jpeg,image/png,image/webp">
-        <div class="hint" id="photoHint">Tap to choose a photo — it uploads automatically. JPG, PNG, or WEBP.</div>
+        <div class="hint" id="photoHint">Each photo you choose is added to the gallery above. JPG, PNG, or WEBP.</div>
       </div>
 
       <div class="field">
@@ -220,7 +222,7 @@ function saveDraft(){
     sizes: selectedSizes,
     colors: selectedColors,
     stockOn,
-    photoUrl: currentPhotoUrl
+    photos: currentPhotos
   };
   try{ localStorage.setItem(DRAFT_KEY, JSON.stringify(draft)); } catch(e){ /* storage unavailable, draft just won't survive a reload */ }
 }
@@ -242,18 +244,14 @@ function loadDraft(){
   stockOn = draft.stockOn !== undefined ? draft.stockOn : true;
   stockSwitch.classList.toggle('on', stockOn);
   document.getElementById('stockLabel').textContent = stockOn ? 'Yes, available to order' : 'No, currently out of stock';
-  if(draft.photoUrl){
-    currentPhotoUrl = draft.photoUrl;
-    document.getElementById('photoPreview').src = currentPhotoUrl;
-    document.getElementById('photoPreviewWrap').style.display = 'block';
-    document.getElementById('photoHint').textContent = editingId ? 'Current photo shown above — choose a new file to replace it.' : 'Uploaded — tap again to replace it.';
-  }
+  currentPhotos = draft.photos || [];
+  renderPhotoGallery();
   if(editingId){
     document.getElementById('formTitle').textContent = 'Editing (restored draft)';
     document.getElementById('formSub').textContent = 'Your unsaved changes were kept — update the details and save.';
     document.getElementById('submitBtn').textContent = 'Save changes';
     document.getElementById('cancelEditBtn').style.display = 'block';
-  } else if(draft.name || draft.price || draft.sizes?.length || draft.colors?.length || draft.photoUrl){
+  } else if(draft.name || draft.price || draft.sizes?.length || draft.colors?.length || draft.photos?.length){
     document.getElementById('formSub').textContent = 'Your unsaved draft was restored.';
   }
 }
@@ -356,10 +354,14 @@ function renderProductGrid(){
   empty.style.display = 'none';
   grid.innerHTML = shown.map(p => {
     const catLabel = (categories.find(c => c.id===p.category) || {}).label || p.category;
+    const photos = p.photos || [];
     return `
     <div class="product-card ${p.in_stock ? '' : 'out'}">
       <span class="pc-stock-tag ${p.in_stock ? 'in' : 'out'}">${p.in_stock ? 'In stock' : 'Out of stock'}</span>
-      <div class="pc-top"><div class="pc-cat">${catLabel}</div><div class="pc-name">${p.name}</div></div>
+      <div class="pc-top" style="display:flex; gap:10px; align-items:flex-start;">
+        ${photos.length ? `<img src="${photos[0]}" style="width:44px;height:44px;object-fit:cover;border-radius:6px;flex-shrink:0;">` : ''}
+        <div><div class="pc-cat">${catLabel}${photos.length ? ` · ${photos.length} photo${photos.length>1?'s':''}` : ' · no photos yet'}</div><div class="pc-name">${p.name}</div></div>
+      </div>
       <div class="pc-price">KSh ${Number(p.price).toLocaleString()}</div>
       <div class="pc-meta">Sizes: ${p.sizes.join(', ') || '—'}<br>Colors: ${p.colors.join(', ') || '—'}</div>
       <div class="pc-actions">
@@ -402,8 +404,26 @@ function addColorFromInput(){
   document.getElementById(id).addEventListener('change', saveDraft);
 });
 
-// ---------- Photo upload ----------
-let currentPhotoUrl = '';
+// ---------- Photo gallery ----------
+let currentPhotos = [];
+
+function renderPhotoGallery(){
+  const el = document.getElementById('photoGallery');
+  if(currentPhotos.length === 0){ el.innerHTML = ''; return; }
+  el.innerHTML = currentPhotos.map((url, i) => `
+    <div class="photo-thumb">
+      <img src="${url}">
+      <span class="rm" onclick="removePhoto(${i})">✕</span>
+      ${i===0 ? '<span class="cover-tag">Cover</span>' : ''}
+    </div>
+  `).join('');
+}
+function removePhoto(i){
+  currentPhotos.splice(i, 1);
+  renderPhotoGallery();
+  saveDraft();
+}
+
 document.getElementById('fPhotoFile').addEventListener('change', async (e) => {
   const file = e.target.files[0];
   if(!file) return;
@@ -430,15 +450,16 @@ document.getElementById('fPhotoFile').addEventListener('change', async (e) => {
       return;
     }
     const data = await res.json();
-    currentPhotoUrl = data.photo_url;
-    document.getElementById('photoPreview').src = currentPhotoUrl;
-    document.getElementById('photoPreviewWrap').style.display = 'block';
-    hint.textContent = 'Uploaded — tap again to replace it.';
-    showToast('Photo uploaded');
+    currentPhotos.push(data.photo_url);
+    renderPhotoGallery();
+    hint.textContent = 'Added — choose another to add more angles, or continue below.';
+    showToast('Photo added');
     saveDraft();
   } catch(e){
     hint.textContent = "Couldn't reach the server — try again.";
     showToast("Couldn't reach the server", true);
+  } finally {
+    e.target.value = ''; // clear so the same file (or another) can be picked again for the next photo
   }
 });
 
@@ -461,9 +482,9 @@ function resetForm(){
   document.getElementById('fPrice').value = '';
   document.getElementById('fDesc').value = '';
   document.getElementById('fPhotoFile').value = '';
-  currentPhotoUrl = '';
-  document.getElementById('photoPreviewWrap').style.display = 'none';
-  document.getElementById('photoHint').textContent = 'Tap to choose a photo — it uploads automatically. JPG, PNG, or WEBP.';
+  currentPhotos = [];
+  renderPhotoGallery();
+  document.getElementById('photoHint').textContent = 'Each photo you choose is added to the gallery above. JPG, PNG, or WEBP.';
   selectedSizes = []; renderSizeChips();
   selectedColors = []; renderColorChips();
   stockOn = true; stockSwitch.classList.add('on'); document.getElementById('stockLabel').textContent = 'Yes, available to order';
@@ -482,15 +503,11 @@ function startEdit(id){
   document.getElementById('fCategory').value = p.category;
   document.getElementById('fPrice').value = p.price;
   document.getElementById('fDesc').value = p.description || '';
-  currentPhotoUrl = p.photo_url || '';
-  if(currentPhotoUrl){
-    document.getElementById('photoPreview').src = currentPhotoUrl;
-    document.getElementById('photoPreviewWrap').style.display = 'block';
-    document.getElementById('photoHint').textContent = 'Current photo shown above — choose a new file to replace it.';
-  } else {
-    document.getElementById('photoPreviewWrap').style.display = 'none';
-    document.getElementById('photoHint').textContent = 'Tap to choose a photo — it uploads automatically. JPG, PNG, or WEBP.';
-  }
+  currentPhotos = [...(p.photos || [])];
+  renderPhotoGallery();
+  document.getElementById('photoHint').textContent = currentPhotos.length
+    ? 'Existing photos shown above — add more angles, or remove ones you no longer want.'
+    : 'No photos yet — choose one to start the gallery.';
   selectedSizes = [...p.sizes]; renderSizeChips();
   selectedColors = [...p.colors]; renderColorChips();
   stockOn = !!p.in_stock; stockSwitch.classList.toggle('on', stockOn);
@@ -505,14 +522,14 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
   const category = document.getElementById('fCategory').value;
   const price = Number(document.getElementById('fPrice').value);
   const description = document.getElementById('fDesc').value.trim();
-  const photo_url = currentPhotoUrl;
+  const photos = currentPhotos;
 
   if(!name || !category || !price){
     showToast('Name, category and price are required', true);
     return;
   }
 
-  const payload = { name, category, price, sizes: selectedSizes, colors: selectedColors, description, photo_url, in_stock: stockOn };
+  const payload = { name, category, price, sizes: selectedSizes, colors: selectedColors, description, photos, in_stock: stockOn };
   const btn = document.getElementById('submitBtn');
   btn.disabled = true;
 
