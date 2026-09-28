@@ -145,6 +145,10 @@
           <input type="number" id="fPrice" placeholder="2800">
         </div>
       </div>
+      <div class="field">
+        <label>Original price (optional — leave blank unless it's on sale)</label>
+        <input type="number" id="fOriginalPrice" placeholder="e.g. 3500, shown crossed out with a Save badge">
+      </div>
 
       <div class="field">
         <label>Sizes available</label>
@@ -163,6 +167,24 @@
       <div class="field">
         <label>Description</label>
         <textarea id="fDesc" placeholder="A short line about this shoe — comfort, use case, who it's for."></textarea>
+      </div>
+
+      <div class="field">
+        <label>Details (optional)</label>
+        <div class="two-col">
+          <input type="text" id="fMaterial" placeholder="Material, e.g. Genuine leather" style="margin-bottom:10px;">
+          <input type="text" id="fStyle" placeholder="Style, e.g. Low-top">
+        </div>
+        <input type="text" id="fClosure" placeholder="Closure, e.g. Lace-up">
+      </div>
+
+      <div class="field">
+        <label>Good for (optional tags)</label>
+        <div class="chip-row" id="tagChips"></div>
+        <div class="chip-add-row">
+          <input type="text" id="tagInput" placeholder="e.g. Everyday wear">
+          <button id="addTagBtn">Add</button>
+        </div>
       </div>
 
       <div class="field">
@@ -207,6 +229,7 @@ let categories = [];
 let products = [];
 let selectedSizes = [];
 let selectedColors = [];
+let selectedTags = [];
 let editingId = null;
 let activeFilter = 'all';
 let stockOn = true;
@@ -218,9 +241,14 @@ function saveDraft(){
     name: document.getElementById('fName').value,
     category: document.getElementById('fCategory').value,
     price: document.getElementById('fPrice').value,
+    originalPrice: document.getElementById('fOriginalPrice').value,
     description: document.getElementById('fDesc').value,
+    material: document.getElementById('fMaterial').value,
+    style: document.getElementById('fStyle').value,
+    closure: document.getElementById('fClosure').value,
     sizes: selectedSizes,
     colors: selectedColors,
+    tags: selectedTags,
     stockOn,
     photos: currentPhotos
   };
@@ -238,9 +266,14 @@ function loadDraft(){
   document.getElementById('fName').value = draft.name || '';
   if(draft.category) document.getElementById('fCategory').value = draft.category;
   document.getElementById('fPrice').value = draft.price || '';
+  document.getElementById('fOriginalPrice').value = draft.originalPrice || '';
   document.getElementById('fDesc').value = draft.description || '';
+  document.getElementById('fMaterial').value = draft.material || '';
+  document.getElementById('fStyle').value = draft.style || '';
+  document.getElementById('fClosure').value = draft.closure || '';
   selectedSizes = draft.sizes || []; renderSizeChips();
   selectedColors = draft.colors || []; renderColorChips();
+  selectedTags = draft.tags || []; renderTagChips();
   stockOn = draft.stockOn !== undefined ? draft.stockOn : true;
   stockSwitch.classList.toggle('on', stockOn);
   document.getElementById('stockLabel').textContent = stockOn ? 'Yes, available to order' : 'No, currently out of stock';
@@ -362,7 +395,7 @@ function renderProductGrid(){
         ${photos.length ? `<img src="${photos[0]}" style="width:44px;height:44px;object-fit:cover;border-radius:6px;flex-shrink:0;">` : ''}
         <div><div class="pc-cat">${catLabel}${photos.length ? ` · ${photos.length} photo${photos.length>1?'s':''}` : ' · no photos yet'}</div><div class="pc-name">${p.name}</div></div>
       </div>
-      <div class="pc-price">KSh ${Number(p.price).toLocaleString()}</div>
+      <div class="pc-price">KSh ${Number(p.price).toLocaleString()}${p.original_price ? ` <span style="text-decoration:line-through;color:#a3927a;font-weight:600;font-size:0.85rem;">KSh ${Number(p.original_price).toLocaleString()}</span>` : ''}</div>
       <div class="pc-meta">Sizes: ${p.sizes.join(', ') || '—'}<br>Colors: ${p.colors.join(', ') || '—'}</div>
       <div class="pc-actions">
         <button class="pc-edit" onclick="startEdit('${p.id}')">Edit</button>
@@ -399,7 +432,22 @@ function addColorFromInput(){
   input.value = '';
 }
 
-['fName','fCategory','fPrice','fDesc'].forEach(id => {
+function renderTagChips(){
+  const el = document.getElementById('tagChips');
+  if(selectedTags.length === 0){ el.innerHTML = '<span style="font-size:0.8rem;color:#a3927a;">No tags added yet</span>'; return; }
+  el.innerHTML = selectedTags.map((t,i) => `<span class="color-chip">${t}<span class="rm" onclick="removeTag(${i})">✕</span></span>`).join('');
+}
+function removeTag(i){ selectedTags.splice(i,1); renderTagChips(); saveDraft(); }
+document.getElementById('addTagBtn').addEventListener('click', addTagFromInput);
+document.getElementById('tagInput').addEventListener('keydown', e => { if(e.key==='Enter'){ e.preventDefault(); addTagFromInput(); } });
+function addTagFromInput(){
+  const input = document.getElementById('tagInput');
+  const val = input.value.trim();
+  if(val && !selectedTags.includes(val)){ selectedTags.push(val); renderTagChips(); saveDraft(); }
+  input.value = '';
+}
+
+['fName','fCategory','fPrice','fOriginalPrice','fDesc','fMaterial','fStyle','fClosure'].forEach(id => {
   document.getElementById(id).addEventListener('input', saveDraft);
   document.getElementById(id).addEventListener('change', saveDraft);
 });
@@ -480,13 +528,18 @@ function resetForm(){
   document.getElementById('fName').value = '';
   document.getElementById('fCategory').selectedIndex = 0;
   document.getElementById('fPrice').value = '';
+  document.getElementById('fOriginalPrice').value = '';
   document.getElementById('fDesc').value = '';
+  document.getElementById('fMaterial').value = '';
+  document.getElementById('fStyle').value = '';
+  document.getElementById('fClosure').value = '';
   document.getElementById('fPhotoFile').value = '';
   currentPhotos = [];
   renderPhotoGallery();
   document.getElementById('photoHint').textContent = 'Each photo you choose is added to the gallery above. JPG, PNG, or WEBP.';
   selectedSizes = []; renderSizeChips();
   selectedColors = []; renderColorChips();
+  selectedTags = []; renderTagChips();
   stockOn = true; stockSwitch.classList.add('on'); document.getElementById('stockLabel').textContent = 'Yes, available to order';
   clearDraft();
 }
@@ -502,7 +555,11 @@ function startEdit(id){
   document.getElementById('fName').value = p.name;
   document.getElementById('fCategory').value = p.category;
   document.getElementById('fPrice').value = p.price;
+  document.getElementById('fOriginalPrice').value = p.original_price || '';
   document.getElementById('fDesc').value = p.description || '';
+  document.getElementById('fMaterial').value = p.material || '';
+  document.getElementById('fStyle').value = p.style || '';
+  document.getElementById('fClosure').value = p.closure || '';
   currentPhotos = [...(p.photos || [])];
   renderPhotoGallery();
   document.getElementById('photoHint').textContent = currentPhotos.length
@@ -510,6 +567,7 @@ function startEdit(id){
     : 'No photos yet — choose one to start the gallery.';
   selectedSizes = [...p.sizes]; renderSizeChips();
   selectedColors = [...p.colors]; renderColorChips();
+  selectedTags = [...(p.tags || [])]; renderTagChips();
   stockOn = !!p.in_stock; stockSwitch.classList.toggle('on', stockOn);
   document.getElementById('stockLabel').textContent = stockOn ? 'Yes, available to order' : 'No, currently out of stock';
   window.scrollTo({top:0, behavior:'smooth'});
@@ -521,15 +579,24 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
   const name = document.getElementById('fName').value.trim();
   const category = document.getElementById('fCategory').value;
   const price = Number(document.getElementById('fPrice').value);
+  const originalPriceRaw = document.getElementById('fOriginalPrice').value.trim();
+  const original_price = originalPriceRaw ? Number(originalPriceRaw) : null;
   const description = document.getElementById('fDesc').value.trim();
+  const material = document.getElementById('fMaterial').value.trim() || null;
+  const style = document.getElementById('fStyle').value.trim() || null;
+  const closure = document.getElementById('fClosure').value.trim() || null;
   const photos = currentPhotos;
 
   if(!name || !category || !price){
     showToast('Name, category and price are required', true);
     return;
   }
+  if(original_price !== null && original_price <= price){
+    showToast('Original price should be higher than the current price', true);
+    return;
+  }
 
-  const payload = { name, category, price, sizes: selectedSizes, colors: selectedColors, description, photos, in_stock: stockOn };
+  const payload = { name, category, price, original_price, sizes: selectedSizes, colors: selectedColors, description, photos, in_stock: stockOn, material, style, closure, tags: selectedTags };
   const btn = document.getElementById('submitBtn');
   btn.disabled = true;
 
