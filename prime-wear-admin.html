@@ -96,6 +96,22 @@
   .pc-stock-tag.in{background:#e9f5ec; color:var(--green);}
   .pc-stock-tag.out{background:#fdeaea; color:var(--red);}
 
+  .check-list{max-height:170px; overflow-y:auto; border:1px solid rgba(42,27,18,0.22); border-radius:8px; background:var(--cream-2); padding:6px 10px;}
+  .check-list label{display:flex; align-items:center; gap:8px; font-weight:600; font-size:0.85rem; margin:0; padding:7px 0; border-bottom:1px solid rgba(42,27,18,0.07);}
+  .check-list label:last-child{border-bottom:none;}
+  .check-list input{width:auto;}
+  .field input[type=datetime-local]{width:100%; padding:11px 12px; border-radius:8px; border:1px solid rgba(42,27,18,0.22); font-size:0.9rem; background:var(--cream-2);}
+  .list-row{border:1px solid rgba(42,27,18,0.1); border-radius:10px; padding:12px 14px; background:var(--cream-2); margin-bottom:10px;}
+  .list-row .lr-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
+  .list-row .lr-title{font-family:var(--display); font-weight:700; font-size:0.95rem;}
+  .list-row .lr-meta{font-size:0.76rem; color:#8a7d6f; margin-top:3px;}
+  .list-row .lr-body{font-size:0.85rem; margin-top:6px;}
+  .status-pill{font-size:0.66rem; font-weight:800; padding:3px 9px; border-radius:999px; text-transform:uppercase; flex-shrink:0;}
+  .status-pill.live{background:#e9f5ec; color:var(--green);}
+  .status-pill.soon{background:#fdf2e9; color:#8f5a24;}
+  .status-pill.ended{background:#eee; color:#888;}
+  .lr-delete{margin-top:8px; background:#fdeaea; color:var(--red); font-size:0.76rem; font-weight:700; padding:7px 14px; border-radius:7px;}
+  .stars-line{color:#c89b4a; letter-spacing:1px; font-size:0.95rem;}
   .empty-state{text-align:center; padding:40px 20px; color:#a3927a; font-size:0.88rem;}
 
   .toast{position:fixed; left:50%; bottom:24px; transform:translateX(-50%) translateY(20px); z-index:120; background:var(--charcoal); color:#fff; padding:12px 22px; border-radius:999px; font-size:0.85rem; font-weight:600; opacity:0; pointer-events:none; transition:opacity .2s, transform .2s; box-shadow:0 8px 20px rgba(0,0,0,0.25); max-width:90vw; text-align:center;}
@@ -214,6 +230,57 @@
       <div id="productGrid" class="product-grid"></div>
       <div id="emptyState" class="empty-state" style="display:none;"></div>
     </div>
+
+    <div class="panel">
+      <h2>Offers &amp; countdowns</h2>
+      <div class="sub">Announce a sale that is coming up or about to end. Customers see a banner with a live countdown. Prices don't change by themselves — use "Original price" on the shoes to actually discount them.</div>
+
+      <div class="field">
+        <label>Offer title</label>
+        <input type="text" id="offTitle" placeholder="e.g. Weekend Sale" maxlength="80">
+      </div>
+      <div class="field">
+        <label>Short message (optional)</label>
+        <input type="text" id="offMessage" placeholder="e.g. Up to 20% off, while stock lasts" maxlength="200">
+      </div>
+      <div class="field">
+        <label>Applies to</label>
+        <select id="offScope">
+          <option value="all">The whole shop</option>
+          <option value="category">One category</option>
+          <option value="products">Specific shoes</option>
+        </select>
+      </div>
+      <div class="field" id="offCategoryWrap" style="display:none;">
+        <label>Which category</label>
+        <select id="offCategory"></select>
+      </div>
+      <div class="field" id="offProductsWrap" style="display:none;">
+        <label>Which shoes</label>
+        <div class="check-list" id="offProducts"></div>
+      </div>
+      <div class="two-col">
+        <div class="field">
+          <label>Starts</label>
+          <input type="datetime-local" id="offStart">
+        </div>
+        <div class="field">
+          <label>Ends</label>
+          <input type="datetime-local" id="offEnd">
+        </div>
+      </div>
+      <div class="hint" style="margin:-6px 0 14px;">Times are in your phone's local time. Set the start in the future for a "coming soon" countdown, or now for a live one.</div>
+      <button class="submit-btn" id="offSubmit">Publish offer</button>
+
+      <h2 style="margin-top:26px;">Your offers</h2>
+      <div id="offList" style="margin-top:10px;"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Customer reviews</h2>
+      <div class="sub">Anyone can post a review. If one is spam or unfair, delete it here and it disappears from the shop.</div>
+      <div id="revList"></div>
+    </div>
   </div>
 </div>
 
@@ -232,6 +299,13 @@ let selectedColors = [];
 let selectedTags = [];
 let editingId = null;
 let activeFilter = 'all';
+let offers = [];
+let reviews = [];
+let offerSelectedProducts = new Set();
+
+// Reviewer- and admin-typed text goes through this before it is put on the page.
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function fmtDateTime(iso){ return new Date(iso).toLocaleString('en-KE', {day:'numeric', month:'short', hour:'numeric', minute:'2-digit'}); }
 let stockOn = true;
 
 const DRAFT_KEY = 'primewear_admin_draft';
@@ -343,6 +417,9 @@ async function enterApp(){
   renderColorChips();
   await loadProducts();
   loadDraft();
+  renderOfferCategoryOptions();
+  loadOffers();
+  loadReviews();
 }
 
 async function loadCategories(){
@@ -361,6 +438,8 @@ async function loadProducts(){
     const res = await fetch(`${BACKEND_URL}/api/products/${SELLER_ID}`);
     products = await res.json();
     renderProductGrid();
+    renderOfferProductChecklist();
+    renderReviews();
   } catch(e){
     showToast("Couldn't load products — check your connection", true);
   }
@@ -646,6 +725,150 @@ async function deleteProduct(id){
     if(!res.ok){ showToast('Could not delete that item', true); return; }
     showToast('Deleted');
     await loadProducts();
+  } catch(e){
+    showToast("Couldn't reach the server — check your connection", true);
+  }
+}
+
+// ---------- Offers ----------
+function offerStatus(o){
+  const now = Date.now(), s = new Date(o.starts_at).getTime(), e = new Date(o.ends_at).getTime();
+  return now < s ? 'soon' : (now < e ? 'live' : 'ended');
+}
+function offerScopeText(o){
+  if(o.scope === 'all') return 'the whole shop';
+  if(o.scope === 'category') return ((categories.find(c => c.id === o.category) || {}).label || o.category);
+  const names = (o.product_ids || []).map(id => (products.find(p => p.id === id) || {}).name).filter(Boolean);
+  return names.length ? names.join(', ') : 'selected shoes';
+}
+function renderOfferCategoryOptions(){
+  document.getElementById('offCategory').innerHTML = categories.map(c => `<option value="${esc(c.id)}">${esc(c.label)}</option>`).join('');
+}
+function renderOfferProductChecklist(){
+  const el = document.getElementById('offProducts');
+  if(products.length === 0){ el.innerHTML = '<div style="padding:8px 0;font-size:0.82rem;color:#a3927a;">Add some shoes first.</div>'; return; }
+  el.innerHTML = products.map(p => `<label><input type="checkbox" value="${esc(p.id)}" ${offerSelectedProducts.has(p.id) ? 'checked' : ''}> ${esc(p.name)}</label>`).join('');
+  el.querySelectorAll('input').forEach(cb => cb.addEventListener('change', () => {
+    if(cb.checked) offerSelectedProducts.add(cb.value); else offerSelectedProducts.delete(cb.value);
+  }));
+}
+document.getElementById('offScope').addEventListener('change', e => {
+  document.getElementById('offCategoryWrap').style.display = e.target.value === 'category' ? 'block' : 'none';
+  document.getElementById('offProductsWrap').style.display = e.target.value === 'products' ? 'block' : 'none';
+});
+
+async function loadOffers(){
+  try{
+    const res = await fetch(`${BACKEND_URL}/api/offers/${SELLER_ID}`);
+    offers = await res.json();
+    renderOffers();
+  } catch(e){
+    document.getElementById('offList').innerHTML = '<div class="empty-state">Couldn\'t load offers — check your connection.</div>';
+  }
+}
+function renderOffers(){
+  const el = document.getElementById('offList');
+  if(offers.length === 0){ el.innerHTML = '<div class="empty-state" style="padding:16px;">No offers yet.</div>'; return; }
+  const order = {live:0, soon:1, ended:2};
+  const sorted = offers.slice().sort((a,b) => order[offerStatus(a)] - order[offerStatus(b)] || new Date(a.starts_at) - new Date(b.starts_at));
+  el.innerHTML = sorted.map(o => {
+    const st = offerStatus(o);
+    return `<div class="list-row">
+      <div class="lr-top">
+        <div><div class="lr-title">${esc(o.title)}</div>
+        <div class="lr-meta">${esc(offerScopeText(o))} · ${fmtDateTime(o.starts_at)} → ${fmtDateTime(o.ends_at)}</div></div>
+        <span class="status-pill ${st}">${st === 'live' ? 'Live' : st === 'soon' ? 'Coming soon' : 'Ended'}</span>
+      </div>
+      ${o.message ? `<div class="lr-body">${esc(o.message)}</div>` : ''}
+      <button class="lr-delete" onclick="deleteOffer('${esc(o.id)}')">Delete</button>
+    </div>`;
+  }).join('');
+}
+document.getElementById('offSubmit').addEventListener('click', async () => {
+  const title = document.getElementById('offTitle').value.trim();
+  const message = document.getElementById('offMessage').value.trim();
+  const scope = document.getElementById('offScope').value;
+  const startVal = document.getElementById('offStart').value;
+  const endVal = document.getElementById('offEnd').value;
+  if(!title){ showToast('Give the offer a title', true); return; }
+  if(!startVal || !endVal){ showToast('Pick both a start and an end time', true); return; }
+  const starts = new Date(startVal), ends = new Date(endVal);
+  if(ends <= starts){ showToast('The end time must be after the start time', true); return; }
+  if(ends <= new Date()){ showToast('That end time has already passed', true); return; }
+  const payload = { title, message, scope, starts_at: starts.toISOString(), ends_at: ends.toISOString() };
+  if(scope === 'category') payload.category = document.getElementById('offCategory').value;
+  if(scope === 'products'){
+    payload.product_ids = Array.from(offerSelectedProducts);
+    if(payload.product_ids.length === 0){ showToast('Tick at least one shoe', true); return; }
+  }
+  const btn = document.getElementById('offSubmit');
+  btn.disabled = true;
+  try{
+    const res = await fetch(`${BACKEND_URL}/api/offers/${SELLER_ID}?secret=${encodeURIComponent(adminSecret)}`, {
+      method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload)
+    });
+    if(res.status === 401){ showToast('Your password was rejected — logging you out', true); localStorage.removeItem('primewear_admin_secret'); setTimeout(() => location.reload(), 1200); return; }
+    if(!res.ok){ const err = await res.json().catch(() => ({})); showToast(err.error || 'Could not publish that offer', true); return; }
+    showToast('Offer published');
+    document.getElementById('offTitle').value = '';
+    document.getElementById('offMessage').value = '';
+    document.getElementById('offStart').value = '';
+    document.getElementById('offEnd').value = '';
+    offerSelectedProducts.clear();
+    renderOfferProductChecklist();
+    await loadOffers();
+  } catch(e){
+    showToast("Couldn't reach the server — check your connection", true);
+  } finally {
+    btn.disabled = false;
+  }
+});
+async function deleteOffer(id){
+  if(!confirm('Delete this offer? Customers will stop seeing it straight away.')) return;
+  try{
+    const res = await fetch(`${BACKEND_URL}/api/offers/${SELLER_ID}/${id}?secret=${encodeURIComponent(adminSecret)}`, { method: 'DELETE' });
+    if(!res.ok){ showToast('Could not delete that offer', true); return; }
+    showToast('Offer deleted');
+    await loadOffers();
+  } catch(e){
+    showToast("Couldn't reach the server — check your connection", true);
+  }
+}
+
+// ---------- Reviews ----------
+async function loadReviews(){
+  try{
+    const res = await fetch(`${BACKEND_URL}/api/reviews/${SELLER_ID}`);
+    reviews = await res.json();
+    renderReviews();
+  } catch(e){
+    document.getElementById('revList').innerHTML = '<div class="empty-state">Couldn\'t load reviews — check your connection.</div>';
+  }
+}
+function renderReviews(){
+  const el = document.getElementById('revList');
+  if(reviews.length === 0){ el.innerHTML = '<div class="empty-state" style="padding:16px;">No reviews yet.</div>'; return; }
+  el.innerHTML = reviews.map(r => {
+    const shoe = (products.find(p => p.id === r.product_id) || {}).name || '(shoe no longer listed)';
+    const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+    return `<div class="list-row">
+      <div class="lr-top">
+        <div><div class="lr-title">${esc(shoe)}</div>
+        <div class="lr-meta">${esc(r.name)} · ${new Date(r.created_at).toLocaleDateString('en-KE', {day:'numeric', month:'short', year:'numeric'})}</div></div>
+        <span class="stars-line">${stars}</span>
+      </div>
+      ${r.comment ? `<div class="lr-body">${esc(r.comment)}</div>` : ''}
+      <button class="lr-delete" onclick="deleteReview('${esc(r.id)}')">Delete review</button>
+    </div>`;
+  }).join('');
+}
+async function deleteReview(id){
+  if(!confirm('Delete this review? This can\'t be undone.')) return;
+  try{
+    const res = await fetch(`${BACKEND_URL}/api/reviews/${SELLER_ID}/${id}?secret=${encodeURIComponent(adminSecret)}`, { method: 'DELETE' });
+    if(!res.ok){ showToast('Could not delete that review', true); return; }
+    showToast('Review deleted');
+    await loadReviews();
   } catch(e){
     showToast("Couldn't reach the server — check your connection", true);
   }
