@@ -24,6 +24,20 @@
   .brand-mark{font-family:var(--display); font-weight:800; font-size:1.05rem; letter-spacing:0.02em;}
   .brand-sub{font-size:0.72rem; color:var(--gold); font-weight:600;}
   .whatsapp-chip{display:flex; align-items:center; gap:6px; background:#25D366; color:#fff; font-size:0.78rem; font-weight:700; padding:8px 14px; border-radius:999px; flex-shrink:0;}
+  .offer-banner{background:linear-gradient(90deg, var(--rust), var(--rust-dark)); color:#fff; text-align:center; padding:10px 16px; font-size:0.84rem; font-weight:600;}
+  .offer-banner b{font-weight:800;}
+  .offer-banner .offer-countdown{font-variant-numeric:tabular-nums; font-weight:800; background:rgba(255,255,255,0.18); padding:2px 9px; border-radius:999px; margin-left:6px;}
+  .offer-tag{display:inline-block; background:var(--rust); color:#fff; font-size:0.68rem; font-weight:800; padding:3px 10px; border-radius:999px; text-transform:uppercase; letter-spacing:0.02em; margin-bottom:10px;}
+  .stars-mini{color:#c89b4a; font-size:0.82rem; letter-spacing:1px;}
+  .stars-mini .count{color:#8a7d6f; font-size:0.74rem; letter-spacing:normal; margin-left:3px;}
+  .review-item{border-bottom:1px solid rgba(42,27,18,0.1); padding:10px 0;}
+  .review-item .ri-top{display:flex; justify-content:space-between; font-size:0.85rem; font-weight:700;}
+  .review-item .ri-meta{font-size:0.72rem; color:#8a7d6f; margin-bottom:4px;}
+  .review-item .ri-comment{font-size:0.85rem; color:#5c4f43;}
+  .star-picker{display:flex; gap:4px; font-size:1.5rem; cursor:pointer; margin-bottom:10px;}
+  .star-picker span{color:#d8cbb8;}
+  .star-picker span.filled{color:#c89b4a;}
+  .rv-honeypot{position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden;}
 
   .fab-order{position:fixed; right:18px; bottom:18px; z-index:80; background:var(--rust); color:#fff; padding:14px 20px 14px 16px; border-radius:999px; display:flex; align-items:center; gap:10px; font-weight:700; font-size:0.92rem; box-shadow:0 10px 26px rgba(181,69,31,0.45); transition:transform .15s;}
   .fab-order:active{transform:scale(0.96);}
@@ -39,6 +53,12 @@
     background-size:220px 140px; background-repeat:repeat; animation:driftShoes 90s linear infinite;}
   @keyframes driftShoes{ from{background-position:0 0;} to{background-position:-1000px 600px;} }
   @media (max-width:640px){ .shoe-hero::before{ opacity:0.17; background-size:150px 96px; } }
+  .shoe-hero.photo-strip-active::before{ display:none; }
+  .hero-photo-strip{position:absolute; inset:0; overflow:hidden; z-index:0; opacity:0.3; pointer-events:none; display:flex; align-items:center;}
+  .hero-photo-strip .track{display:inline-flex; gap:14px; white-space:nowrap; animation:heroPhotoScroll 70s linear infinite;}
+  .hero-photo-strip img{width:120px; height:120px; object-fit:cover; border-radius:12px; flex-shrink:0; filter:grayscale(15%) brightness(0.9);}
+  @keyframes heroPhotoScroll{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
+  @media (max-width:640px){ .hero-photo-strip img{ width:84px; height:84px; } }
   .shoe-hero-inner{position:relative; z-index:1; max-width:900px; margin:0 auto; text-align:center;}
   .shoe-hero .eyebrow{
     display:inline-flex; align-items:center; gap:8px; color:var(--gold); font-weight:700;
@@ -54,6 +74,7 @@
   .hero-divider{width:52px; height:2px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin:22px auto; opacity:0.8;}
   .shoe-hero p.lede{font-family:var(--display); font-style:italic; font-weight:500; color:rgba(237,227,208,0.88); max-width:540px; margin:0 auto 30px; font-size:1.15rem; line-height:1.5;}
   .hero-cta-row{display:flex; gap:14px; justify-content:center; flex-wrap:wrap;}
+  .trust-line{margin-top:22px; font-size:0.78rem; font-weight:600; color:var(--gold); letter-spacing:0.02em;}
   .btn-primary{background:var(--rust); color:#fff; padding:14px 26px; border-radius:8px; font-weight:700; font-size:0.95rem; box-shadow:0 10px 22px rgba(181,69,31,0.35);}
   .btn-ghost{border:1px solid rgba(237,227,208,0.4); color:var(--cream); padding:13px 24px; border-radius:8px; font-weight:600; font-size:0.95rem;}
 
@@ -108,6 +129,11 @@
   .related-card .related-name{font-size:0.74rem; font-weight:600; margin-top:5px; line-height:1.2; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
   .related-card .related-price{font-size:0.76rem; font-weight:800; color:var(--rust-dark); margin-top:2px;}
   .cat-picker-row{display:flex; gap:12px; overflow-x:auto; padding-bottom:6px; margin-bottom:8px;}
+  .search-sort-row{display:flex; gap:10px; margin:14px 0 8px; flex-wrap:wrap;}
+  .search-sort-row input{flex:1; min-width:180px; padding:11px 14px; border-radius:8px; border:1px solid rgba(42,27,18,0.22); font-size:0.88rem; background:#fff; font-family:inherit;}
+  .search-sort-row select{padding:11px 12px; border-radius:8px; border:1px solid rgba(42,27,18,0.22); font-size:0.85rem; background:#fff; font-family:inherit;}
+  .search-sort-row input:focus, .search-sort-row select:focus{outline:none; border-color:var(--rust);}
+  .result-count{font-size:0.78rem; color:#8a7d6f; font-weight:600; margin-bottom:4px;}
   .cat-picker-card{flex-shrink:0; width:110px; cursor:pointer; position:relative; border-radius:10px; overflow:hidden; aspect-ratio:1/0.9; background:linear-gradient(160deg, var(--leather-light), var(--leather) 60%, var(--espresso-2));}
   .cat-picker-card img{width:100%; height:100%; object-fit:cover;}
   .cat-picker-card svg{width:60%; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);}
@@ -207,7 +233,9 @@
   </div>
 </nav>
 
+<div id="offerBanner" style="display:none;"></div>
 <div class="shoe-hero">
+  <div class="hero-photo-strip" id="heroPhotoStrip"></div>
   <div class="shoe-hero-inner">
     <div class="eyebrow">◆ PRIME WEAR COLLECTIONS 254</div>
     <h1>Every pair has a <span class="stitch">shelf</span> here.</h1>
@@ -217,6 +245,7 @@
       <a href="#catalog" class="btn-primary">Browse the shelves</a>
       <button class="btn-ghost" onclick="scrollToFilter('official')">Shop official wear</button>
     </div>
+    <div class="trust-line">100% Genuine Branded Shoes · High Quality, Checked Before Delivery</div>
   </div>
 </div>
 <div class="shelf-strip"><div class="track" id="shelfTrack"></div></div>
@@ -227,6 +256,16 @@
     <p>Tap any pair to see sizes, colours and details before you add it to your order.</p>
   </div>
   <div class="cat-picker-row" id="catPickerRow"></div>
+  <div class="search-sort-row">
+    <input type="search" id="searchInput" placeholder="Search shoes, e.g. leather, boots, kids…">
+    <select id="sortSelect">
+      <option value="default">Sort: Default</option>
+      <option value="price-asc">Price: Low to High</option>
+      <option value="price-desc">Price: High to Low</option>
+      <option value="name">Name: A to Z</option>
+    </select>
+  </div>
+  <div class="result-count" id="resultCount"></div>
   <div class="filter-row" id="filterRow"></div>
   <div class="shoe-grid" id="shoeGrid"></div>
 </div>
@@ -297,17 +336,27 @@ function productImageHTML(p, colorForFallback, photoIndex){
   return recolorSvg(svg, colorForFallback);
 }
 
+let OFFERS = [];
+let REVIEWS = [];
+
+// Anything typed by a reviewer, or coming back from the server, goes through this before it hits the page.
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
 async function loadShopData(){
   const grid = document.getElementById('shoeGrid');
   grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:#8a7d6f;">Loading the shelves…</div>`;
   try{
-    const [catRes, prodRes] = await Promise.all([
+    const [catRes, prodRes, offerRes, reviewRes] = await Promise.all([
       fetch(`${BACKEND_URL}/api/categories/${SELLER_ID}`),
-      fetch(`${BACKEND_URL}/api/products/${SELLER_ID}`)
+      fetch(`${BACKEND_URL}/api/products/${SELLER_ID}`),
+      fetch(`${BACKEND_URL}/api/offers/${SELLER_ID}`).catch(() => null),
+      fetch(`${BACKEND_URL}/api/reviews/${SELLER_ID}`).catch(() => null)
     ]);
     if(!catRes.ok || !prodRes.ok) throw new Error('bad response');
     const cats = await catRes.json();
     const prods = await prodRes.json();
+    OFFERS = (offerRes && offerRes.ok) ? await offerRes.json() : [];
+    REVIEWS = (reviewRes && reviewRes.ok) ? await reviewRes.json() : [];
 
     CATS = [{id:'all', label:'All shoes'}, ...cats];
     PRODUCTS = prods.map(p => ({
@@ -320,6 +369,8 @@ async function loadShopData(){
     renderFilters();
     renderGrid();
     renderCategoryPicker();
+    renderOfferBanner();
+    renderHeroPhotoStrip();
   } catch(e){
     grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:#8a7d6f;">
       Couldn't load the shelves right now — check your connection.<br>
@@ -366,6 +417,138 @@ function scrollToFilter(cat){
 
 const shelfWords = ['SNEAKERS','OFFICIAL WEAR','BOOTS','SANDALS & SLIDES','KIDS SHOES','SIZE 38–45','PRIME WEAR COLLECTIONS 254'];
 document.getElementById('shelfTrack').innerHTML = shelfWords.concat(shelfWords).map(w=>`<span>${w}</span>`).join('&nbsp;&nbsp;&nbsp;&nbsp;');
+
+// ---------- Offers ----------
+function offerStatus(o){
+  const now = Date.now(), s = new Date(o.starts_at).getTime(), e = new Date(o.ends_at).getTime();
+  return now < s ? 'soon' : (now < e ? 'live' : 'ended');
+}
+function offerCoversProduct(o, p){
+  if(o.scope === 'all') return true;
+  if(o.scope === 'category') return o.category === p.cat;
+  return (o.product_ids || []).includes(p.id);
+}
+function offerCountdownText(o, status){
+  const target = status === 'soon' ? new Date(o.starts_at) : new Date(o.ends_at);
+  let diff = Math.max(0, target - Date.now());
+  const d = Math.floor(diff / 86400000); diff -= d * 86400000;
+  const h = Math.floor(diff / 3600000); diff -= h * 3600000;
+  const m = Math.floor(diff / 60000); diff -= m * 60000;
+  const s = Math.floor(diff / 1000);
+  const parts = d > 0 ? [`${d}d`, `${h}h`] : h > 0 ? [`${h}h`, `${m}m`] : [`${m}m`, `${s}s`];
+  return (status === 'soon' ? 'Starts in ' : 'Ends in ') + parts.join(' ');
+}
+function pickBannerOffer(){
+  const live = OFFERS.filter(o => offerStatus(o) === 'live').sort((a,b) => new Date(a.ends_at) - new Date(b.ends_at));
+  if(live.length) return live[0];
+  const soon = OFFERS.filter(o => offerStatus(o) === 'soon').sort((a,b) => new Date(a.starts_at) - new Date(b.starts_at));
+  return soon.length ? soon[0] : null;
+}
+let bannerTimer = null;
+function renderOfferBanner(){
+  const el = document.getElementById('offerBanner');
+  const offer = pickBannerOffer();
+  if(!offer){ el.style.display = 'none'; el.innerHTML = ''; if(bannerTimer){ clearInterval(bannerTimer); bannerTimer = null; } return; }
+  const status = offerStatus(offer);
+  el.style.display = 'block';
+  el.innerHTML = `<div class="offer-banner"><b>${esc(offer.title)}</b>${offer.message ? ' — ' + esc(offer.message) : ''}<span class="offer-countdown" id="offerCountdownText"></span></div>`;
+  const tick = () => {
+    const nowStatus = offerStatus(offer);
+    if(nowStatus !== status){ renderOfferBanner(); return; } // flipped soon->live or live->ended: recompute which offer to show
+    const t = document.getElementById('offerCountdownText');
+    if(t) t.textContent = offerCountdownText(offer, nowStatus);
+  };
+  tick();
+  if(bannerTimer) clearInterval(bannerTimer);
+  bannerTimer = setInterval(tick, 1000);
+}
+function productOfferTagHTML(p){
+  const active = OFFERS.find(o => offerStatus(o) !== 'ended' && offerCoversProduct(o, p));
+  if(!active) return '';
+  const status = offerStatus(active);
+  return `<span class="offer-tag">${esc(active.title)} · ${status === 'soon' ? 'Coming soon' : 'On now'}</span>`;
+}
+
+// ---------- Reviews ----------
+function reviewsFor(productId){ return REVIEWS.filter(r => r.product_id === productId); }
+function starsMiniHTML(productId){
+  const list = reviewsFor(productId);
+  if(list.length === 0) return '';
+  const avg = list.reduce((sum, r) => sum + r.rating, 0) / list.length;
+  const full = Math.round(avg);
+  return `<div class="stars-mini">${'★'.repeat(full)}${'☆'.repeat(5-full)}<span class="count">(${list.length})</span></div>`;
+}
+let modalStarPick = 5;
+function reviewsSectionHTML(p){
+  const list = reviewsFor(p.id);
+  const listHtml = list.length === 0
+    ? `<div style="font-size:0.85rem;color:#8a7d6f;padding:6px 0;">No reviews yet — be the first to share what you think.</div>`
+    : list.map(r => `<div class="review-item">
+        <div class="ri-top"><span>${esc(r.name)}</span><span class="stars-mini">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span></div>
+        <div class="ri-meta">${new Date(r.created_at).toLocaleDateString('en-KE', {day:'numeric', month:'short', year:'numeric'})}</div>
+        ${r.comment ? `<div class="ri-comment">${esc(r.comment)}</div>` : ''}
+      </div>`).join('');
+  return `
+    <div class="modal-section">
+      <label>Reviews${list.length ? ` (${list.length})` : ''}</label>
+      <div id="reviewsList">${listHtml}</div>
+      <div style="margin-top:14px;">
+        <div class="star-picker" id="starPicker">${[1,2,3,4,5].map(n => `<span data-n="${n}" onclick="setModalStarPick(${n})">★</span>`).join('')}</div>
+        <input type="text" id="revName" placeholder="Your name" style="width:100%;padding:10px 12px;border-radius:6px;border:1px solid rgba(42,27,18,0.25);font-size:0.88rem;margin-bottom:8px;">
+        <textarea id="revComment" placeholder="What did you think? (optional)" style="width:100%;padding:10px 12px;border-radius:6px;border:1px solid rgba(42,27,18,0.25);font-size:0.88rem;min-height:56px;margin-bottom:8px;"></textarea>
+        <input type="text" id="revWebsite" class="rv-honeypot" tabindex="-1" autocomplete="off">
+        <button class="modal-add-btn" style="background:var(--espresso);" onclick="submitReview('${p.id}')">Post review</button>
+        <div id="revStatus" style="font-size:0.8rem;color:var(--rust-dark);margin-top:6px;"></div>
+      </div>
+    </div>
+  `;
+}
+function setModalStarPick(n){
+  modalStarPick = n;
+  document.querySelectorAll('#starPicker span').forEach(el => el.classList.toggle('filled', Number(el.dataset.n) <= n));
+}
+async function submitReview(productId){
+  const name = document.getElementById('revName').value.trim();
+  const comment = document.getElementById('revComment').value.trim();
+  const website = document.getElementById('revWebsite').value;
+  const status = document.getElementById('revStatus');
+  if(!name){ status.textContent = 'Please add your name.'; return; }
+  status.textContent = 'Posting…';
+  try{
+    const res = await fetch(`${BACKEND_URL}/api/reviews/${SELLER_ID}`, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ product_id: productId, name, rating: modalStarPick, comment, website })
+    });
+    const data = await res.json().catch(() => ({}));
+    if(!res.ok){ status.textContent = data.error || 'Could not post your review — try again.'; return; }
+    REVIEWS.push({ id: data.id, product_id: productId, name, rating: modalStarPick, comment, created_at: new Date().toISOString() });
+    modalStarPick = 5;
+    document.getElementById('revName').value = '';
+    document.getElementById('revComment').value = '';
+    status.textContent = '';
+    renderProductModal();
+    renderGrid();
+    showToast('Thanks for your review!');
+  } catch(e){
+    status.textContent = "Couldn't reach the server — check your connection.";
+  }
+}
+
+function renderHeroPhotoStrip(){
+  const el = document.getElementById('heroPhotoStrip');
+  const hero = document.querySelector('.shoe-hero');
+  const allPhotos = PRODUCTS.flatMap(p => p.photos || []);
+  // Needs a real minimum before it looks intentional rather than sparse — below that, keep the placeholder pattern.
+  if(allPhotos.length < 6){
+    el.innerHTML = '';
+    hero.classList.remove('photo-strip-active');
+    return;
+  }
+  const chosen = allPhotos.slice(0, 24); // cap for smooth scrolling; automatically includes more as they're uploaded, up to this cap
+  const doubled = chosen.concat(chosen); // duplicated so the scroll loops seamlessly
+  el.innerHTML = `<div class="track">${doubled.map(url => `<img src="${url}" alt="">`).join('')}</div>`;
+  hero.classList.add('photo-strip-active');
+}
 
 function renderCategoryPicker(){
   const row = document.getElementById('catPickerRow');
@@ -429,11 +612,31 @@ function priceHTML(p, big){
   return `<div class="${cls}">KSh ${p.price.toLocaleString()}</div>`;
 }
 
+let searchQuery = '';
+let sortMode = 'default';
+
+function matchesSearch(p, q){
+  if(!q) return true;
+  const haystack = [p.name, p.desc, p.material, p.style, p.closure, catLabelFor(p.cat), (p.tags||[]).join(' '), (p.colors||[]).join(' ')]
+    .join(' ').toLowerCase();
+  // every word typed must appear somewhere, so "black leather" matches a black leather shoe
+  return q.toLowerCase().split(/\s+/).filter(Boolean).every(word => haystack.includes(word));
+}
+
 function renderGrid(){
   const grid = document.getElementById('shoeGrid');
-  const items = PRODUCTS.filter(p=>activeFilter==='all' || p.cat===activeFilter);
+  const countEl = document.getElementById('resultCount');
+  let items = PRODUCTS.filter(p => (activeFilter==='all' || p.cat===activeFilter) && matchesSearch(p, searchQuery));
+
+  if(sortMode === 'price-asc') items = items.slice().sort((a,b)=>a.price-b.price);
+  else if(sortMode === 'price-desc') items = items.slice().sort((a,b)=>b.price-a.price);
+  else if(sortMode === 'name') items = items.slice().sort((a,b)=>a.name.localeCompare(b.name));
+
+  countEl.textContent = PRODUCTS.length ? `${items.length} ${items.length===1?'shoe':'shoes'} found` : '';
+
   if(items.length === 0){
-    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:#8a7d6f;">Nothing in this category yet.</div>`;
+    const msg = searchQuery ? `No shoes match "${searchQuery}". Try a different word, or clear the search.` : 'Nothing in this category yet.';
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:#8a7d6f;">${msg}</div>`;
     return;
   }
   grid.innerHTML = items.map(p=>`
@@ -446,12 +649,16 @@ function renderGrid(){
       <div class="info">
         <h4>${p.name}</h4>
         ${priceHTML(p)}
+        ${starsMiniHTML(p.id)}
         <div class="sizes">Sizes: ${p.sizes.join(', ')}</div>
         <div class="view-details-hint">See details & sizes →</div>
       </div>
     </div>
   `).join('');
 }
+
+document.getElementById('searchInput').addEventListener('input', e => { searchQuery = e.target.value.trim(); renderGrid(); });
+document.getElementById('sortSelect').addEventListener('change', e => { sortMode = e.target.value; renderGrid(); });
 
 function showToast(msg){
   const t = document.getElementById('toast');
@@ -482,6 +689,7 @@ function renderProductModal(){
     </div>` : ''}
     <div class="modal-body">
       <div class="modal-cat">${catLabelFor(p.cat)}</div>
+      ${productOfferTagHTML(p)}
       <h2>${p.name}</h2>
       ${priceHTML(p, true)}
       <div class="modal-desc">${p.desc}</div>
@@ -506,9 +714,12 @@ function renderProductModal(){
       </div>
       <button class="modal-add-btn" onclick="confirmAddFromModal()">Add ${modalQty} to My Order — KSh ${(p.price*modalQty).toLocaleString()}</button>
       `}
+      ${reviewsSectionHTML(p)}
       ${relatedProductsHTML(p)}
     </div>
   `;
+  const picker = document.getElementById('starPicker');
+  if(picker) setModalStarPick(modalStarPick);
   if(p.stock){
     box.querySelectorAll('.swatch-chip').forEach(el=>el.addEventListener('click', ()=>{ modalColor = el.dataset.color; renderProductModal(); }));
     box.querySelectorAll('.size-chip').forEach(el=>el.addEventListener('click', ()=>{ modalSize = Number(el.dataset.size); renderProductModal(); }));
