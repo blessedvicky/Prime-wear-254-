@@ -54,11 +54,14 @@
   @keyframes driftShoes{ from{background-position:0 0;} to{background-position:-1000px 600px;} }
   @media (max-width:640px){ .shoe-hero::before{ opacity:0.17; background-size:150px 96px; } }
   .shoe-hero.photo-strip-active::before{ display:none; }
-  .hero-photo-strip{position:absolute; inset:0; overflow:hidden; z-index:0; opacity:0.3; pointer-events:none; display:flex; align-items:center;}
-  .hero-photo-strip .track{display:inline-flex; gap:14px; white-space:nowrap; animation:heroPhotoScroll 70s linear infinite;}
-  .hero-photo-strip img{width:120px; height:120px; object-fit:cover; border-radius:12px; flex-shrink:0; filter:grayscale(15%) brightness(0.9);}
-  @keyframes heroPhotoScroll{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
-  @media (max-width:640px){ .hero-photo-strip img{ width:84px; height:84px; } }
+  .hero-photo-strip{position:absolute; inset:0; overflow:hidden; z-index:0; opacity:0.32; pointer-events:none; display:flex; flex-direction:column; justify-content:space-around; padding:10px 0;}
+  .hero-photo-row{display:inline-flex; align-items:center; gap:22px; white-space:nowrap; width:max-content;}
+  .hero-photo-row.dir-left{animation-name:heroScrollLeft;}
+  .hero-photo-row.dir-right{animation-name:heroScrollRight;}
+  .hero-photo-row img{object-fit:cover; border-radius:14px; flex-shrink:0; filter:grayscale(15%) brightness(0.9);}
+  @keyframes heroScrollLeft{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
+  @keyframes heroScrollRight{ from{transform:translateX(-50%);} to{transform:translateX(0);} }
+  @media (max-width:640px){ .hero-photo-row{ gap:14px; } }
   .shoe-hero-inner{position:relative; z-index:1; max-width:900px; margin:0 auto; text-align:center;}
   .shoe-hero .eyebrow{
     display:inline-flex; align-items:center; gap:8px; color:var(--gold); font-weight:700;
@@ -544,9 +547,30 @@ function renderHeroPhotoStrip(){
     hero.classList.remove('photo-strip-active');
     return;
   }
-  const chosen = allPhotos.slice(0, 24); // cap for smooth scrolling; automatically includes more as they're uploaded, up to this cap
-  const doubled = chosen.concat(chosen); // duplicated so the scroll loops seamlessly
-  el.innerHTML = `<div class="track">${doubled.map(url => `<img src="${url}" alt="">`).join('')}</div>`;
+
+  // Shuffle so the same shoe's photos don't all land in a row together, then split into 3 uneven rows.
+  const shuffled = allPhotos.slice(0, 30).sort(() => Math.random() - 0.5);
+  const rowCount = 3;
+  const rows = Array.from({length: rowCount}, () => []);
+  shuffled.forEach((url, i) => rows[i % rowCount].push(url));
+
+  // Each row gets its own size, speed and direction so nothing reads as one uniform marching line.
+  const rowStyles = [
+    { size: 108, duration: 85, dir: 'left'  },
+    { size: 76,  duration: 65, dir: 'right' },
+    { size: 130, duration: 100, dir: 'left'  },
+  ];
+
+  el.innerHTML = rows.map((photos, i) => {
+    if(photos.length === 0) return '';
+    const { size, duration, dir } = rowStyles[i % rowStyles.length];
+    const doubled = photos.concat(photos); // duplicated so each row's scroll loops seamlessly
+    const imgs = doubled.map(url => {
+      const tilt = (Math.random() * 8 - 4).toFixed(1); // small random tilt, -4deg to 4deg, so it feels candid not gridded
+      return `<img src="${url}" alt="" style="width:${size}px;height:${size}px;transform:rotate(${tilt}deg);">`;
+    }).join('');
+    return `<div class="hero-photo-row dir-${dir}" style="animation-duration:${duration}s;">${imgs}</div>`;
+  }).join('');
   hero.classList.add('photo-strip-active');
 }
 
