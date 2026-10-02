@@ -18,11 +18,16 @@
   button{font-family:inherit; cursor:pointer; border:none; background:none;}
   input, select, textarea{font-family:inherit;}
 
-  .topnav{background:var(--espresso); color:var(--cream); padding:16px 20px; border-bottom:1px solid var(--line); position:sticky; top:0; z-index:20;}
+  .topnav{background:var(--espresso); color:var(--cream); padding:16px 20px; border-bottom:1px solid var(--line);}
   .topnav-inner{max-width:900px; margin:0 auto; display:flex; justify-content:space-between; align-items:center;}
   .brand-mark{font-family:var(--display); font-weight:800; font-size:1.1rem;}
   .brand-sub{font-size:0.72rem; color:var(--gold); font-weight:600;}
   .logout-btn{color:rgba(237,227,208,0.7); font-size:0.78rem; font-weight:600; text-decoration:underline;}
+  .sticky-top-group{position:sticky; top:0; z-index:20;}
+  .admin-tabbar{display:flex; background:var(--espresso-2); border-bottom:1px solid var(--line); overflow-x:auto;}
+  .admin-tab{flex:1; min-width:110px; padding:13px 10px; color:rgba(237,227,208,0.65); font-weight:700; font-size:0.86rem; text-align:center; border-bottom:3px solid transparent; position:relative; white-space:nowrap;}
+  .admin-tab.active{color:var(--cream); border-bottom-color:var(--gold); background:rgba(0,0,0,0.12);}
+  .tab-badge{background:var(--rust); color:#fff; font-size:0.65rem; font-weight:800; padding:1px 6px; border-radius:999px; margin-left:5px; vertical-align:middle;}
 
   .gate{max-width:360px; margin:80px auto; padding:0 20px; text-align:center;}
   .gate .shoe-icon{width:64px; margin:0 auto 20px;}
@@ -131,17 +136,25 @@
 </div>
 
 <div id="app" style="display:none;">
-  <nav class="topnav">
-    <div class="topnav-inner">
-      <div>
-        <div class="brand-mark">Prime Wear Admin</div>
-        <div class="brand-sub">Manage what's on the shelves</div>
+  <div class="sticky-top-group">
+    <nav class="topnav">
+      <div class="topnav-inner">
+        <div>
+          <div class="brand-mark">Prime Wear Admin</div>
+          <div class="brand-sub">Manage what's on the shelves</div>
+        </div>
+        <button class="logout-btn" id="logoutBtn">Log out</button>
       </div>
-      <button class="logout-btn" id="logoutBtn">Log out</button>
+    </nav>
+    <div class="admin-tabbar">
+      <button class="admin-tab active" data-tab="shoes" onclick="switchTab('shoes')">👟 Shoes</button>
+      <button class="admin-tab" data-tab="offers" onclick="switchTab('offers')">🏷️ Offers<span class="tab-badge" id="offersTabBadge" style="display:none;"></span></button>
+      <button class="admin-tab" data-tab="reviews" onclick="switchTab('reviews')">⭐ Reviews<span class="tab-badge" id="reviewsTabBadge" style="display:none;"></span></button>
     </div>
-  </nav>
+  </div>
 
   <div class="wrap">
+    <div class="tab-panel" id="tab-shoes">
     <div class="panel">
       <h2 id="formTitle">Add a new shoe</h2>
       <div class="sub" id="formSub">Fill this in and it goes live on the shop immediately.</div>
@@ -230,7 +243,9 @@
       <div id="productGrid" class="product-grid"></div>
       <div id="emptyState" class="empty-state" style="display:none;"></div>
     </div>
+    </div>
 
+    <div class="tab-panel" id="tab-offers" style="display:none;">
     <div class="panel">
       <h2>Offers &amp; countdowns</h2>
       <div class="sub">Announce a sale that is coming up or about to end. Customers see a banner with a live countdown. Prices don't change by themselves — use "Original price" on the shoes to actually discount them.</div>
@@ -270,16 +285,26 @@
         </div>
       </div>
       <div class="hint" style="margin:-6px 0 14px;">Times are in your phone's local time. Set the start in the future for a "coming soon" countdown, or now for a live one.</div>
+
+      <div class="field">
+        <label>Discount (optional — automatic)</label>
+        <input type="number" id="offDiscount" placeholder="e.g. 20 for 20% off" min="1" max="90">
+        <div class="hint">If set, every shoe this offer applies to shows this discount automatically while the offer is live, and goes back to normal the moment it ends. No need to touch prices on the shoes themselves — even as you add more.</div>
+      </div>
+
       <button class="submit-btn" id="offSubmit">Publish offer</button>
 
       <h2 style="margin-top:26px;">Your offers</h2>
       <div id="offList" style="margin-top:10px;"></div>
     </div>
+    </div>
 
+    <div class="tab-panel" id="tab-reviews" style="display:none;">
     <div class="panel">
       <h2>Customer reviews</h2>
       <div class="sub">Anyone can post a review. If one is spam or unfair, delete it here and it disappears from the shop.</div>
       <div id="revList"></div>
+    </div>
     </div>
   </div>
 </div>
@@ -408,6 +433,19 @@ document.getElementById('logoutBtn').addEventListener('click', () => {
   document.getElementById('gateScreen').style.display = 'block';
   document.getElementById('secretInput').value = '';
 });
+
+function switchTab(name){
+  document.querySelectorAll('.admin-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+  document.querySelectorAll('.tab-panel').forEach(p => p.style.display = (p.id === `tab-${name}` ? 'block' : 'none'));
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+function updateTabBadges(){
+  const liveOffers = offers.filter(o => offerStatus(o) === 'live').length;
+  const ob = document.getElementById('offersTabBadge');
+  ob.textContent = liveOffers; ob.style.display = liveOffers > 0 ? 'inline-block' : 'none';
+  const rb = document.getElementById('reviewsTabBadge');
+  rb.textContent = reviews.length; rb.style.display = reviews.length > 0 ? 'inline-block' : 'none';
+}
 
 async function enterApp(){
   document.getElementById('gateScreen').style.display = 'none';
@@ -775,7 +813,7 @@ function renderOffers(){
     const st = offerStatus(o);
     return `<div class="list-row">
       <div class="lr-top">
-        <div><div class="lr-title">${esc(o.title)}</div>
+        <div><div class="lr-title">${esc(o.title)}${o.discount_percent ? ` <span style="color:var(--rust-dark);font-weight:800;">· ${o.discount_percent}% OFF</span>` : ''}</div>
         <div class="lr-meta">${esc(offerScopeText(o))} · ${fmtDateTime(o.starts_at)} → ${fmtDateTime(o.ends_at)}</div></div>
         <span class="status-pill ${st}">${st === 'live' ? 'Live' : st === 'soon' ? 'Coming soon' : 'Ended'}</span>
       </div>
@@ -783,6 +821,7 @@ function renderOffers(){
       <button class="lr-delete" onclick="deleteOffer('${esc(o.id)}')">Delete</button>
     </div>`;
   }).join('');
+  updateTabBadges();
 }
 document.getElementById('offSubmit').addEventListener('click', async () => {
   const title = document.getElementById('offTitle').value.trim();
@@ -795,7 +834,9 @@ document.getElementById('offSubmit').addEventListener('click', async () => {
   const starts = new Date(startVal), ends = new Date(endVal);
   if(ends <= starts){ showToast('The end time must be after the start time', true); return; }
   if(ends <= new Date()){ showToast('That end time has already passed', true); return; }
-  const payload = { title, message, scope, starts_at: starts.toISOString(), ends_at: ends.toISOString() };
+  const discountRaw = document.getElementById('offDiscount').value.trim();
+  if(discountRaw && (Number(discountRaw) < 1 || Number(discountRaw) > 90)){ showToast('Discount must be between 1 and 90 percent', true); return; }
+  const payload = { title, message, scope, starts_at: starts.toISOString(), ends_at: ends.toISOString(), discount_percent: discountRaw ? Number(discountRaw) : null };
   if(scope === 'category') payload.category = document.getElementById('offCategory').value;
   if(scope === 'products'){
     payload.product_ids = Array.from(offerSelectedProducts);
@@ -814,6 +855,7 @@ document.getElementById('offSubmit').addEventListener('click', async () => {
     document.getElementById('offMessage').value = '';
     document.getElementById('offStart').value = '';
     document.getElementById('offEnd').value = '';
+    document.getElementById('offDiscount').value = '';
     offerSelectedProducts.clear();
     renderOfferProductChecklist();
     await loadOffers();
@@ -861,6 +903,7 @@ function renderReviews(){
       <button class="lr-delete" onclick="deleteReview('${esc(r.id)}')">Delete review</button>
     </div>`;
   }).join('');
+  updateTabBadges();
 }
 async function deleteReview(id){
   if(!confirm('Delete this review? This can\'t be undone.')) return;
